@@ -21,7 +21,7 @@ module mycpu_top(
     output [31:0] ID_pc,
     output [31:0] EXE_pc,
     output [31:0] MEM_pc,
-    //output [31:0] WB_pc,
+    output [31:0] WB_pc,
     
     //5级流水新增
     output [31:0] cpu_5_valid,
@@ -142,6 +142,20 @@ module mycpu_top(
         end
     end
     
+    //cpu应该只需要给出使能，写使能信号和地址即可
+    //具体数据应该为top.v和inst_sram和data_sram交互得到
+    //inst_sram && data_sram信号 
+    assign inst_sram_en = {IF_valid};
+    //暂时未想好什么时候有效
+    //assign inst_sram_wea 
+    // assign inst_sram_rdata   
+
+    // assign data_sram_en =
+    // assign data_sram_wen =  
+    // assign data_sram_addr = 
+    // assign data_sram_wdata = 
+    // assign data_sram_rdata = 
+
     //展示5级的valid信号
     assign cpu_5_valid = {12'd0         ,{4{IF_valid }},{4{ID_valid}},
                           {4{EXE_valid}},{4{MEM_valid}},{4{WB_valid}}};
@@ -243,7 +257,7 @@ module mycpu_top(
         .inst_addr (inst_sram_addr),
         .IF_over   (IF_over   ),  // O, 1
         .IF_ID_bus (IF_ID_bus ),  // O, 64
-        
+        // .IF_valid  (inst_sram_en),
         //5级流水新增接口
         .exc_bus   (exc_bus   ),  // I, 32
         
@@ -332,10 +346,13 @@ module mycpu_top(
         .LO_data     (LO_data     )   // O, 32
     );
 
-    // inst_rom inst_rom_module(         // 指令存储器
+    // // inst_rom inst_rom_module(         // 指令存储器
+    // inst_ram inst_ram_module(
     //     .clka       (clk           ),  // I, 1 ,时钟
-    //     .addra      (inst_addr[9:2]),  // I, 8 ,指令地址
-    //     .douta      (inst          )   // O, 32,指令
+    //     //.addra      (inst_addr[9:2]),  // I, 8 ,指令地址
+    //     .addra      (inst_sram_addr[9:2]),
+    //     // .douta      (inst          )   // O, 32,指令
+    //     .douta      (inst_sram_rdata)
     // );
 
     regfile rf_module(        // 寄存器堆模块
