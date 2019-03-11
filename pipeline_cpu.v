@@ -150,11 +150,7 @@ module mycpu_top(
     //assign inst_sram_wea 
     // assign inst_sram_rdata   
 
-    // assign data_sram_en =
-    // assign data_sram_wen =  
-    // assign data_sram_addr = 
-    // assign data_sram_wdata = 
-    // assign data_sram_rdata = 
+    assign data_sram_en = {MEM_valid};
 
     //展示5级的valid信号
     assign cpu_5_valid = {12'd0         ,{4{IF_valid }},{4{ID_valid}},
@@ -221,10 +217,10 @@ module mycpu_top(
     wire [ 4:0] WB_wdest;
     
     //MEM与data_ram交互    
-    wire [ 3:0] dm_wen;
-    wire [31:0] dm_addr;
-    wire [31:0] dm_wdata;
-    wire [31:0] dm_rdata;
+    // wire [ 3:0] dm_wen;
+    // wire [31:0] dm_addr;
+    // wire [31:0] dm_wdata;
+    // wire [31:0] dm_rdata;
 
     //ID与regfile交互
     wire [ 4:0] rs;
@@ -257,7 +253,7 @@ module mycpu_top(
         .inst_addr (inst_sram_addr),
         .IF_over   (IF_over   ),  // O, 1
         .IF_ID_bus (IF_ID_bus ),  // O, 64
-        // .IF_valid  (inst_sram_en),
+
         //5级流水新增接口
         .exc_bus   (exc_bus   ),  // I, 32
         
@@ -306,10 +302,16 @@ module mycpu_top(
         .clk          (clk          ),  // I, 1 
         .MEM_valid    (MEM_valid    ),  // I, 1
         .EXE_MEM_bus_r(EXE_MEM_bus_r),  // I, 154
-        .dm_rdata     (dm_rdata     ),  // I, 32
-        .dm_addr      (dm_addr      ),  // O, 32
-        .dm_wen       (dm_wen       ),  // O, 4 
-        .dm_wdata     (dm_wdata     ),  // O, 32
+        // .dm_rdata     (dm_rdata     ),  // I, 32
+        // .dm_addr      (dm_addr      ),  // O, 32
+        // .dm_wen       (dm_wen       ),  // O, 4 
+        // .dm_wdata     (dm_wdata     ),  // O, 32
+      
+        .dm_rdata     (data_sram_rdata),
+        .dm_addr      (data_sram_addr),
+        .dm_wen       (data_sram_wen),
+        .dm_wdata     (data_sram_wdata),
+      
         .MEM_over     (MEM_over     ),  // O, 1
         .MEM_WB_bus   (MEM_WB_bus   ),  // O, 118
         
