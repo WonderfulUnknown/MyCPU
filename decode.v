@@ -18,7 +18,7 @@ module decode(                      // 译码级
     output     [166:0] ID_EXE_bus,  // ID->EXE总线
     
     //5级流水新增
-     input              IF_over,     //对于分支指令，需要该信号
+    input              IF_over,     //对于分支指令，需要该信号
     input      [  4:0] EXE_wdest,   // EXE级要写回寄存器堆的目标地址号
     input      [  4:0] MEM_wdest,   // MEM级要写回寄存器堆的目标地址号
     input      [  4:0] WB_wdest,    // WB级要写回寄存器堆的目标地址号

@@ -146,7 +146,7 @@ module mycpu_top(
     //具体数据应该为top.v和inst_sram和data_sram交互得到
     //inst_sram && data_sram信号 
     assign inst_sram_en = {IF_valid};
-    //暂时未想好什么时候有效
+    //可能不需要的信号
     //assign inst_sram_wea 
     // assign inst_sram_rdata   
 
@@ -229,9 +229,9 @@ module mycpu_top(
     wire [31:0] rt_value;
     
     //WB与regfile交互
-    wire        rf_wen;
-    wire [ 4:0] rf_wdest;
-    wire [31:0] rf_wdata;    
+    // wire        rf_wen;
+    // wire [ 4:0] rf_wdest;
+    // wire [31:0] rf_wdata;    
     
     //WB与IF间的交互信号
     wire [32:0] exc_bus;
@@ -342,11 +342,13 @@ module mycpu_top(
         .cancel      (cancel      ),  // O, 1
         
         //展示PC和HI/LO值
-        // .WB_pc       (WB_pc       ),  // O, 32
-        .WB_pc       (debug_wb_pc ),
+        .WB_pc       (WB_pc       ),  // O, 32
+        // .WB_pc       (debug_wb_pc ),
         .HI_data     (HI_data     ),  // O, 32
         .LO_data     (LO_data     )   // O, 32
     );
+
+    assign debug_wb_pc = WB_pc;
 
     // // inst_rom inst_rom_module(         // 指令存储器
     // inst_ram inst_ram_module(
@@ -359,11 +361,14 @@ module mycpu_top(
 
     regfile rf_module(        // 寄存器堆模块
         .clk    (clk      ),  // I, 1
-        .wen    (rf_wen   ),  // I, 1
+        // .wen    (rf_wen   ),  // I, 1
+        .wen    (debug_wb_rf_wen),
         .raddr1 (rs       ),  // I, 5
         .raddr2 (rt       ),  // I, 5
-        .waddr  (rf_wdest ),  // I, 5
-        .wdata  (rf_wdata ),  // I, 32
+        // .waddr  (rf_wdest ),  // I, 5
+        .waddr     (debug_wb_rf_wnum),
+        // .wdata  (rf_wdata ),  // I, 32
+        .wdata  (debug_wb_rf_wdata),
         .rdata1 (rs_value ),  // O, 32
         .rdata2 (rt_value ),  // O, 32
 
