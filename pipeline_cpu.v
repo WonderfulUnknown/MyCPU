@@ -230,9 +230,9 @@ module mycpu_top(
     wire [31:0] rt_value;
     
     //WB与regfile交互
-    // wire        rf_wen;
-    // wire [ 4:0] rf_wdest;
-    // wire [31:0] rf_wdata;    
+    wire        rf_wen;
+    wire [ 4:0] rf_wdest;
+    wire [31:0] rf_wdata;    
     
     //WB与IF间的交互信号
     wire [32:0] exc_bus;
@@ -327,12 +327,9 @@ module mycpu_top(
     wb WB_module(                     // 写回级
         .WB_valid    (WB_valid    ),  // I, 1
         .MEM_WB_bus_r(MEM_WB_bus_r),  // I, 118
-        // .rf_wen      (rf_wen      ),  // O, 1
-        .rf_wen      (debug_wb_rf_wen),
-        // .rf_wdest    (rf_wdest    ),  // O, 5
-        .rf_wdest    (debug_wb_rf_wnum),
-        // .rf_wdata    (rf_wdata    ),  // O, 32
-        .rf_wdata    (debug_wb_rf_wdata),
+        .rf_wen      (rf_wen      ),  // O, 1
+        .rf_wdest    (rf_wdest    ),  // O, 5
+        .rf_wdata    (rf_wdata    ),  // O, 32
         .WB_over     (WB_over     ),  // O, 1
         
         //5级流水新增接口
@@ -359,14 +356,11 @@ module mycpu_top(
 
     regfile rf_module(        // 寄存器堆模块
         .clk    (clk      ),  // I, 1
-        // .wen    (rf_wen   ),  // I, 1
-        .wen    (debug_wb_rf_wen),
+        .wen    (rf_wen   ),  // I, 1
         .raddr1 (rs       ),  // I, 5
         .raddr2 (rt       ),  // I, 5
-        // .waddr  (rf_wdest ),  // I, 5
-        .waddr     (debug_wb_rf_wnum),
-        // .wdata  (rf_wdata ),  // I, 32
-        .wdata  (debug_wb_rf_wdata),
+        .waddr  (rf_wdest ),  // I, 5
+        .wdata  (rf_wdata ),  // I, 32
         .rdata1 (rs_value ),  // O, 32
         .rdata2 (rt_value ),  // O, 32
 
@@ -376,9 +370,9 @@ module mycpu_top(
     );
     
     assign debug_wb_pc = WB_pc;
-    // assign debug_wb_rf_wen = rf_wen;
-    // assign debug_wb_rf_wdata = rf_wdata;
-    // assign debug_wb_rf_wnum = rf_wdest;
+    assign debug_wb_rf_wen = rf_wen;
+    assign debug_wb_rf_wdata = rf_wdata;
+    assign debug_wb_rf_wnum = rf_wdest;
 
     // data_ram data_ram_module(   // 数据存储模块
     //     .clka   (clk         ),  // I, 1,  时钟
