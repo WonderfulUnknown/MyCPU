@@ -13,9 +13,9 @@ module mycpu_top(
     
     //display data
     input  [ 4:0] rf_addr,
-    input  [31:0] mem_addr,
+    //input  [31:0] mem_addr,
     output [31:0] rf_data,
-    output [31:0] mem_data,
+    // output [31:0] mem_data,
     output [31:0] IF_pc,
     output [31:0] IF_inst,
     output [31:0] ID_pc,
@@ -30,9 +30,9 @@ module mycpu_top(
 
     //the signal for soc_lite_top.v
     input        inst_sram_en,
-    input [3 :0] inst_sram_wen,
+    // input [3 :0] inst_sram_wen,
     input [31:0] inst_sram_addr,
-    input [31:0] inst_sram_wdata,
+    // input [31:0] inst_sram_wdata,
     input [31:0] inst_sram_rdata,
 
     input        data_sram_en,
@@ -143,7 +143,8 @@ module mycpu_top(
     end
     
     //cpu应该只需要给出使能，写使能信号和地址即可
-    //具体数据应该为top.v和inst_sram和data_sram交互得到
+    //具体数据由soc_lite_top.v和inst_ram和data_ram交互得到
+    
     //inst_sram && data_sram信号 
     assign inst_sram_en = {IF_valid};
     //可能不需要的信号
@@ -343,12 +344,9 @@ module mycpu_top(
         
         //展示PC和HI/LO值
         .WB_pc       (WB_pc       ),  // O, 32
-        // .WB_pc       (debug_wb_pc ),
         .HI_data     (HI_data     ),  // O, 32
         .LO_data     (LO_data     )   // O, 32
     );
-
-    assign debug_wb_pc = WB_pc;
 
     // // inst_rom inst_rom_module(         // 指令存储器
     // inst_ram inst_ram_module(
@@ -377,6 +375,11 @@ module mycpu_top(
         .test_data(rf_data)   // O, 32
     );
     
+    assign debug_wb_pc = WB_pc;
+    // assign debug_wb_rf_wen = rf_wen;
+    // assign debug_wb_rf_wdata = rf_wdata;
+    // assign debug_wb_rf_wnum = rf_wdest;
+
     // data_ram data_ram_module(   // 数据存储模块
     //     .clka   (clk         ),  // I, 1,  时钟
     //     .wea    (dm_wen      ),  // I, 1,  写使能

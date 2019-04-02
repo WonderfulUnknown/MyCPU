@@ -21,7 +21,7 @@ module wb(                       // 写回级
     output [ 32:0] exc_bus,      // Exception pc总线
     output [  4:0] WB_wdest,     // WB级要写回寄存器堆的目标地址号
     output         cancel,       // syscall和eret到达写回级时会发出cancel信号，
-                                  // 取消已经取出的正在其他流水级执行的指令
+                                 // 取消已经取出的正在其他流水级执行的指令
  
     //展示PC和HI/LO值
     output [ 31:0] WB_pc,

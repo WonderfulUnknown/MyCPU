@@ -96,5 +96,3 @@ module fetch(                    // 取指级
     assign IF_inst = inst;
 //-----{展示IF模块的PC值和指令}end
 endmodule
-
-//缺少将inst_rom中的指令内容取出来赋值给inst的代码

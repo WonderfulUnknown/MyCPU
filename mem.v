@@ -75,6 +75,9 @@ module mem(                          // 访存级
     //访存读写地址
     assign dm_addr = exe_result;
     
+    //(*)当begin end里面的任意信号发生变化时
+    //会在当前begin end重新执行一遍begin end 
+
     //store操作的写使能
     always @ (*)    // 内存写使能信号
     begin

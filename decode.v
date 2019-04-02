@@ -297,11 +297,12 @@ module decode(                      // 译码级
                           lb_sign };
                           
     //写回需要用到的信息
+    //对应某些特殊指令的信号
     wire mfhi;
     wire mflo;
     wire mtc0;
     wire mfc0;
-    wire [7 :0] cp0r_addr;
+    wire [7 :0] cp0r_addr;//?涉及cp0寄存器
     wire       syscall;   //syscall和eret在写回级有特殊的操作 
     wire       eret;
     wire       rf_wen;    //写回的寄存器写使能
