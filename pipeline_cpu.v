@@ -41,11 +41,11 @@ module mycpu_top(
     input [31:0] data_sram_wdata,
     input [31:0] data_sram_rdata,
 
-        //debug
+    //debug
     output [31:0] debug_wb_pc,
-    output        debug_wb_rf_wen,
-    output        debug_wb_rf_wnum,
-    output        debug_wb_rf_wdata
+    output [ 3:0] debug_wb_rf_wen,
+    output [ 4:0] debug_wb_rf_wnum,
+    output [31:0] debug_wb_rf_wdata
     );
 //------------------------{5级流水控制信号}begin-------------------------//
     //5模块的valid信号
@@ -230,7 +230,7 @@ module mycpu_top(
     wire [31:0] rt_value;
     
     //WB与regfile交互
-    wire        rf_wen;
+    wire [ 3:0] rf_wen;
     wire [ 4:0] rf_wdest;
     wire [31:0] rf_wdata;    
     

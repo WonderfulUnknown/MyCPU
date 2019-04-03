@@ -10,7 +10,7 @@
 module wb(                       // 写回级
     input          WB_valid,     // 写回级有效
     input  [117:0] MEM_WB_bus_r, // MEM->WB总线
-    output         rf_wen,       // 寄存器写使能
+    output [  3:0] rf_wen,       // 寄存器写使能
     output [  4:0] rf_wdest,     // 寄存器写地址
     output [ 31:0] rf_wdata,     // 寄存器写数据
     output         WB_over,      // WB模块执行完成
@@ -175,7 +175,7 @@ module wb(                       // 写回级
 //-----{WB执行完成}end
 
 //-----{WB->regfile信号}begin
-    assign rf_wen   = wen & WB_over;
+    assign rf_wen   = {4{wen & WB_over}};
     assign rf_wdest = wdest;
     assign rf_wdata = mfhi ? hi :
                       mflo ? lo :
