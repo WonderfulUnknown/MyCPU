@@ -66,10 +66,17 @@ module decode(                      // 译码级
     wire inst_MULT, inst_MFLO , inst_MFHI, inst_MTLO;
     wire inst_MTHI, inst_MFC0 , inst_MTC0;
     wire inst_ERET, inst_SYSCALL;
+
+    //lab3-2
+    wire inst_ADD , inst_ADDI;
+    wire inst_SUB;
+
+
     wire op_zero;  // 操作码全0
     wire sa_zero;  // sa域全0
     assign op_zero = ~(|op);
     assign sa_zero = ~(|sa);
+
     assign inst_ADDU  = op_zero & sa_zero    & (funct == 6'b100001);//无符号加法
     assign inst_SUBU  = op_zero & sa_zero    & (funct == 6'b100011);//无符号减法
     assign inst_SLT   = op_zero & sa_zero    & (funct == 6'b101010);//小于则置位
@@ -125,6 +132,11 @@ module decode(                      // 译码级
     assign inst_SYSCALL = (op == 6'b000000) & (funct == 6'b001100); // 系统调用
     assign inst_ERET    = (op == 6'b010000) & (rs==5'd16) & (rt==5'd0)
                         & (rd==5'd0) & sa_zero & (funct == 6'b011000);//异常返回
+
+    //lab3-2 溢出报错指令
+    assign inst_ADDI  = (op == 6'b001000);//rt = rs + imm
+    assign inst_ADD   = op_zero & sa_zero    & (funct == 6'b100000);//加法
+    assign inst_SUB   = op_zero & sa_zero    & (funct == 6'b100011);//无符号减法
     
     //跳转分支指令
     wire inst_jr;    //寄存器跳转指令
@@ -146,9 +158,9 @@ module decode(                      // 译码级
     wire inst_add, inst_sub, inst_slt,inst_sltu;
     wire inst_and, inst_nor, inst_or, inst_xor;
     wire inst_sll, inst_srl, inst_sra,inst_lui;
-    assign inst_add = inst_ADDU | inst_ADDIU | inst_load
-                    | inst_store | inst_j_link;            // 做加法
-    assign inst_sub = inst_SUBU;                           // 减法
+    assign inst_add = inst_ADD | inst_ADDU | inst_ADDIU | inst_ADDI | 
+                      inst_load | inst_store | inst_j_link;// 做加法
+    assign inst_sub = inst_SUB | inst_SUBU;                // 减法
     assign inst_slt = inst_SLT | inst_SLTI;                // 有符号小于置位
     assign inst_sltu= inst_SLTIU | inst_SLTU;              // 无符号小于置位
     assign inst_and = inst_AND | inst_ANDI;                // 逻辑与
@@ -167,20 +179,23 @@ module decode(                      // 译码级
     //依据立即数扩展方式分类
     wire inst_imm_zero; //立即数0扩展
     wire inst_imm_sign; //立即数符号扩展
-    assign inst_imm_zero = inst_ANDI  | inst_LUI  | inst_ORI | inst_XORI;
-    assign inst_imm_sign = inst_ADDIU | inst_SLTI | inst_SLTIU
+    assign inst_imm_zero = inst_ANDI  | inst_LUI  | inst_ORI  | inst_XORI;
+    assign inst_imm_sign = inst_ADD  | inst_ADDIU | inst_ADDI 
+                         | inst_SLTI | inst_SLTIU
                          | inst_load | inst_store;
     
     //依据目的寄存器号分类
     wire inst_wdest_rt;  // 寄存器堆写入地址为rt的指令
     wire inst_wdest_31;  // 寄存器堆写入地址为31的指令
     wire inst_wdest_rd;  // 寄存器堆写入地址为rd的指令
-    assign inst_wdest_rt = inst_imm_zero | inst_ADDIU | inst_SLTI
+    assign inst_wdest_rt = inst_imm_zero | inst_ADDIU | inst_ADDI | inst_SLTI
                          | inst_SLTIU | inst_load | inst_MFC0;
     assign inst_wdest_31 = inst_JAL;
-    assign inst_wdest_rd = inst_ADDU | inst_SUBU | inst_SLT  | inst_SLTU
+    assign inst_wdest_rd = inst_ADD  | inst_ADDU 
+                         | inst_SUB  | inst_SUBU 
+                         | inst_SLT  | inst_SLTU
                          | inst_JALR | inst_AND  | inst_NOR  | inst_OR 
-                            | inst_XOR  | inst_SLL  | inst_SLLV | inst_SRA 
+                         | inst_XOR  | inst_SLL  | inst_SLLV | inst_SRA 
                          | inst_SRAV | inst_SRL  | inst_SRLV
                          | inst_MFHI | inst_MFLO;
                          
@@ -188,7 +203,7 @@ module decode(                      // 译码级
     wire inst_no_rs;  //指令rs域非0，且不是从寄存器堆读rs的数据
     wire inst_no_rt;  //指令rt域非0，且不是从寄存器堆读rt的数据
     assign inst_no_rs = inst_MTC0 | inst_SYSCALL | inst_ERET;
-    assign inst_no_rt = inst_ADDIU | inst_SLTI | inst_SLTIU
+    assign inst_no_rt = inst_ADDIU | inst_ADDI | inst_SLTI | inst_SLTIU
                       | inst_BGEZ  | inst_load | inst_imm_zero
                       | inst_J     | inst_JAL  | inst_MFC0
                       | inst_SYSCALL;

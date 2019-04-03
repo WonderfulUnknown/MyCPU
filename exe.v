@@ -11,16 +11,16 @@ module exe(                         // 执行级
     output             EXE_over,    // EXE模块执行完成
     output     [153:0] EXE_MEM_bus, // EXE->MEM总线
     
-     //5级流水新增
-     input             clk,       // 时钟
-     output     [  4:0] EXE_wdest,   // EXE级要写回寄存器堆的目标地址号
+    //5级流水新增
+    input              clk,       // 时钟
+    output     [  4:0] EXE_wdest,   // EXE级要写回寄存器堆的目标地址号
  
     //展示PC
     output     [ 31:0] EXE_pc
 );
 //-----{ID->EXE总线}begin
     //EXE需要用到的信息
-    wire multiply;            //乘法
+    wire multiply;         //乘法
     wire mthi;             //MTHI
     wire mtlo;             //MTLO
     wire [11:0] alu_control;
@@ -28,7 +28,7 @@ module exe(                         // 执行级
     wire [31:0] alu_operand2;
 
     //访存需要用到的load/store信息
-    wire [3:0] mem_control;  //MEM需要使用的控制信号
+    wire [ 3:0] mem_control;  //MEM需要使用的控制信号
     wire [31:0] store_data;  //store操作的存的数据
                           
     //写回需要用到的信息
