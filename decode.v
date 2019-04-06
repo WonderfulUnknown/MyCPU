@@ -15,7 +15,7 @@ module decode(                      // 译码级
     output     [ 32:0] jbr_bus,     // 跳转总线
 //  output             inst_jbr,    // 指令为跳转分支指令,五级流水不需要
     output             ID_over,     // ID模块执行完成
-    output     [166:0] ID_EXE_bus,  // ID->EXE总线
+    output     [167:0] ID_EXE_bus,  // ID->EXE总线
     
     //5级流水新增
     input              IF_over,     //对于分支指令，需要该信号
@@ -135,8 +135,8 @@ module decode(                      // 译码级
 
     //lab3-2 溢出报错指令
     assign inst_ADDI  = (op == 6'b001000);//rt = rs + imm
-    assign inst_ADD   = op_zero & sa_zero    & (funct == 6'b100000);//加法
-    assign inst_SUB   = op_zero & sa_zero    & (funct == 6'b100011);//无符号减法
+    assign inst_ADD   = op_zero & sa_zero   & (funct == 6'b100000);//加法
+    assign inst_SUB   = op_zero & sa_zero   & (funct == 6'b100011);//无符号减法
     
     //跳转分支指令
     wire inst_jr;    //寄存器跳转指令
@@ -275,6 +275,11 @@ module decode(                      // 译码级
     assign multiply = inst_MULT;
     assign mthi     = inst_MTHI;
     assign mtlo     = inst_MTLO;
+
+    //new
+    wire check_overflow;   //判断是否需要检测溢出
+    assign check_overflow = inst_ADD | inst_ADDI
+                          | inst_SUB ;
     //ALU两个源操作数和控制信号
     wire [11:0] alu_control;
     wire [31:0] alu_operand1;
@@ -336,10 +341,11 @@ module decode(                      // 译码级
     assign store_data = rt_value;
     assign ID_EXE_bus = {multiply,mthi,mtlo,                   //EXE需用的信息,新增
                          alu_control,alu_operand1,alu_operand2,//EXE需用的信息
+                         check_overflow,                       //EXE需用的信息，判断是否需要检测溢出       
                          mem_control,store_data,               //MEM需用的信号
                          mfhi,mflo,                            //WB需用的信号,新增
                          mtc0,mfc0,cp0r_addr,syscall,eret,     //WB需用的信号,新增
-                         rf_wen, rf_wdest,                     //WB需用的信号
+                         rf_wen, rf_wdest,                     //WB需用的信号               
                          pc};                                  //PC值
 //-----{ID->EXE总线}end
 

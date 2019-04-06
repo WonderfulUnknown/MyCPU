@@ -18,7 +18,7 @@ module fetch(                    // 取指级
     output     [63:0] IF_ID_bus, // IF->ID总线
     
     //5级流水新增接口
-    input      [32:0] exc_bus,   // Exception pc总线
+    input      [33:0] exc_bus,   // Exception pc总线
         
     //展示PC和取出的指令
     output     [31:0] IF_pc,
@@ -38,7 +38,8 @@ module fetch(                    // 取指级
     //Exception PC
     wire        exc_valid;
     wire [31:0] exc_pc;
-    assign {exc_valid,exc_pc} = exc_bus;
+    wire        overflow;
+    assign {exc_valid,exc_pc,overflow} = exc_bus;
     
     //pc+4
     assign seq_pc[31:2]    = pc[31:2] + 1'b1;  // 下一指令地址：PC=PC+4

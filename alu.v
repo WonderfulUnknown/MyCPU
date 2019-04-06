@@ -9,7 +9,9 @@ module alu(
     input  [11:0] alu_control,  // ALU控制信号
     input  [31:0] alu_src1,     // ALU操作数1,为补码
     input  [31:0] alu_src2,     // ALU操作数2，为补码
-    output [31:0] alu_result    // ALU结果
+    output [31:0] alu_result,   // ALU结果
+    //new
+    output        cout      // 结果是否溢出
     );
 
     // ALU控制信号，独热码
@@ -66,7 +68,7 @@ module alu(
     wire        adder_cout    ;
     assign adder_operand1 = alu_src1; 
     assign adder_operand2 = alu_add ? alu_src2 : ~alu_src2; 
-    assign adder_cin      = ~alu_add; //减法需要cin 
+    assign adder_cin      = ~alu_add; //减法需要cin,补码
     adder adder_module(
     .operand1(adder_operand1),
     .operand2(adder_operand2),
@@ -164,4 +166,5 @@ module alu(
                         alu_sra           ? sra_result :
                         alu_lui           ? lui_result :
                         32'd0;
+    assign cout = adder_cout;
 endmodule

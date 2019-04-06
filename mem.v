@@ -8,13 +8,13 @@
 module mem(                          // 访存级
     input              clk,          // 时钟
     input              MEM_valid,    // 访存级有效信号
-    input      [153:0] EXE_MEM_bus_r,// EXE->MEM总线
+    input      [154:0] EXE_MEM_bus_r,// EXE->MEM总线
     input      [ 31:0] dm_rdata,     // 访存读数据
     output     [ 31:0] dm_addr,      // 访存读写地址
     output reg [  3:0] dm_wen,       // 访存写使能
     output reg [ 31:0] dm_wdata,     // 访存写数据
     output             MEM_over,     // MEM模块执行完成
-    output     [117:0] MEM_WB_bus,   // MEM->WB总线
+    output     [118:0] MEM_WB_bus,   // MEM->WB总线
     
     //5级流水新增接口
     input              MEM_allow_in, // MEM级允许下级进入
@@ -44,7 +44,9 @@ module mem(                          // 访存级
     wire       eret;
     wire       rf_wen;    //写回的寄存器写使能
     wire [4:0] rf_wdest;  //写回的目的寄存器
-    
+    //new
+    wire overflow; //溢出信号
+
     //pc
     wire [31:0] pc;    
     assign {mem_control,
@@ -62,6 +64,8 @@ module mem(                          // 访存级
             eret,
             rf_wen,
             rf_wdest,
+            //new
+            overflow,
             pc         } = EXE_MEM_bus_r;  
 //-----{EXE->MEM总线}end
 
@@ -117,16 +121,16 @@ module mem(                          // 访存级
     end
     
      //load读出的数据
-     wire        load_sign;
-     wire [31:0] load_result;
+    wire        load_sign;
+    wire [31:0] load_result;
     assign load_sign = (dm_addr[1:0]==2'd0) ? dm_rdata[ 7] :
                        (dm_addr[1:0]==2'd1) ? dm_rdata[15] :
                        (dm_addr[1:0]==2'd2) ? dm_rdata[23] : dm_rdata[31] ;
-     assign load_result[7:0] = (dm_addr[1:0]==2'd0) ? dm_rdata[ 7:0 ] :
+    assign load_result[7:0] = (dm_addr[1:0]==2'd0) ? dm_rdata[ 7:0 ] :
                                (dm_addr[1:0]==2'd1) ? dm_rdata[15:8 ] :
                                (dm_addr[1:0]==2'd2) ? dm_rdata[23:16] :
                                                       dm_rdata[31:24] ;
-     assign load_result[31:8]= ls_word ? dm_rdata[31:8] : {24{lb_sign & load_sign}};
+    assign load_result[31:8]= ls_word ? dm_rdata[31:8] : {24{lb_sign & load_sign}};
 //-----{load/store访存}end
 
 //-----{MEM执行完成}begin
@@ -167,6 +171,8 @@ module mem(                          // 访存级
                          hi_write,lo_write,                 // HI/LO写使能，新增
                          mfhi,mflo,                         // WB需要使用的信号,新增
                          mtc0,mfc0,cp0r_addr,syscall,eret,  // WB需要使用的信号,新增
+                         //new
+                         overflow,                          //WB需用的信号，异常
                          pc};                               // PC值
 //-----{MEM->WB总线}begin
 

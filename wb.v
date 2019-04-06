@@ -9,7 +9,7 @@
                                  // 此处实现的Exception只有SYSCALL
 module wb(                       // 写回级
     input          WB_valid,     // 写回级有效
-    input  [117:0] MEM_WB_bus_r, // MEM->WB总线
+    input  [118:0] MEM_WB_bus_r, // MEM->WB总线
     output [  3:0] rf_wen,       // 寄存器写使能
     output [  4:0] rf_wdest,     // 寄存器写地址
     output [ 31:0] rf_wdata,     // 寄存器写数据
@@ -18,7 +18,7 @@ module wb(                       // 写回级
     //5级流水新增接口
     input             clk,       // 时钟
     input             resetn,    // 复位信号，低电平有效
-    output [ 32:0] exc_bus,      // Exception pc总线
+    output [ 33:0] exc_bus,      // Exception pc总线
     output [  4:0] WB_wdest,     // WB级要写回寄存器堆的目标地址号
     output         cancel,       // syscall和eret到达写回级时会发出cancel信号，
                                  // 取消已经取出的正在其他流水级执行的指令
@@ -48,6 +48,8 @@ module wb(                       // 写回级
     wire [7 :0] cp0r_addr;
     wire       syscall;   //syscall和eret在写回级有特殊的操作 
     wire       eret;
+    //new 
+    wire overflow; 
     
     //pc
     wire [31:0] pc;    
@@ -64,6 +66,7 @@ module wb(                       // 写回级
             cp0r_addr,
             syscall,
             eret,
+            overflow,
             pc} = MEM_WB_bus_r;
 //-----{MEM->WB总线}end
 
@@ -176,6 +179,7 @@ module wb(                       // 写回级
 
 //-----{WB->regfile信号}begin
     assign rf_wen   = {4{wen & WB_over}};
+    // assign rf_wen   = wen & {4{WB_over}};
     assign rf_wdest = wdest;
     assign rf_wdata = mfhi ? hi :
                       mflo ? lo :
@@ -185,13 +189,13 @@ module wb(                       // 写回级
 //-----{Exception pc信号}begin
     wire        exc_valid;
     wire [31:0] exc_pc;
-    assign exc_valid = (syscall | eret) & WB_valid;
+    assign exc_valid = (syscall | eret | overflow) & WB_valid;
     //eret返回地址为EPC寄存器的值
     //SYSCALL的excPC应该为{EBASE[31:10],10'h180},
     //但作为实验，先设置EXC_ENTER_ADDR为0，方便测试程序的编写
     assign exc_pc = syscall ? `EXC_ENTER_ADDR : cp0r_epc;
     
-    assign exc_bus = {exc_valid,exc_pc};
+    assign exc_bus = {exc_valid,exc_pc,overflow};
 //-----{Exception pc信号}end
 
 //-----{WB模块的dest值}begin
