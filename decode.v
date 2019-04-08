@@ -68,7 +68,7 @@ module decode(                      // 译码级
     wire inst_ERET, inst_SYSCALL;
 
     //lab3-2
-    wire inst_ADD , inst_ADDI;
+    wire inst_ADD, inst_ADDI;
     wire inst_SUB;
 
 
@@ -134,9 +134,9 @@ module decode(                      // 译码级
                         & (rd==5'd0) & sa_zero & (funct == 6'b011000);//异常返回
 
     //lab3-2 溢出报错指令
-    assign inst_ADDI  = (op == 6'b001000);//rt = rs + imm
-    assign inst_ADD   = op_zero & sa_zero   & (funct == 6'b100000);//加法
-    assign inst_SUB   = op_zero & sa_zero   & (funct == 6'b100011);//无符号减法
+    assign inst_ADD   = op_zero & sa_zero & (funct == 6'b100000);//加法
+    assign inst_ADDI  = op == 6'b001000;//rt = rs + imm
+    assign inst_SUB   = op_zero & sa_zero & (funct == 6'b100011);//无符号减法
     
     //跳转分支指令
     wire inst_jr;    //寄存器跳转指令
@@ -254,6 +254,7 @@ module decode(                      // 译码级
     //由于是流水的，存在数据相关
     wire rs_wait;
     wire rt_wait;
+    //从rs(非0号寄存器)中取值，且存在数据相关
     assign rs_wait = ~inst_no_rs & (rs!=5'd0)
                    & ( (rs==EXE_wdest) | (rs==MEM_wdest) | (rs==WB_wdest) );
     assign rt_wait = ~inst_no_rt & (rt!=5'd0)
@@ -280,6 +281,7 @@ module decode(                      // 译码级
     wire check_overflow;   //判断是否需要检测溢出
     assign check_overflow = inst_ADD | inst_ADDI
                           | inst_SUB ;
+
     //ALU两个源操作数和控制信号
     wire [11:0] alu_control;
     wire [31:0] alu_operand1;

@@ -148,7 +148,7 @@ module mycpu_top(
     //inst_sram && data_sram信号 
     assign inst_sram_en = {IF_valid};
     //可能不需要的信号
-    //assign inst_sram_wea 
+    // assign inst_sram_wea 
     // assign inst_sram_rdata   
 
     assign data_sram_en = {MEM_valid};
@@ -202,6 +202,18 @@ module mycpu_top(
             MEM_WB_bus_r <= MEM_WB_bus;
         end
     end
+    // always @(posedge clk)
+    // begin
+    //     if (!resetn)
+    //     begin
+    //         MEM_WB_bus_r <= 161'd0;
+    //     end
+    //     else if (MEM_over && WB_allow_in)
+    //     begin
+    //         MEM_WB_bus_r <= MEM_WB_bus;
+    //     end
+    // end
+
 //---------------------------{5级间的总线}end----------------------------//
 
 //--------------------------{其他交互信号}begin--------------------------//
@@ -213,8 +225,8 @@ module mycpu_top(
     // wire [31:0] inst;
 
     //ID与EXE、MEM、WB交互
-    wire [ 4:0] EXE_wdest;
-    wire [ 4:0] MEM_wdest;
+    // wire [ 4:0] EXE_wdest;
+    // wire [ 4:0] MEM_wdest;
     wire [ 4:0] WB_wdest;
     
     //MEM与data_ram交互    
@@ -237,6 +249,15 @@ module mycpu_top(
     //WB与IF间的交互信号
     wire [33:0] exc_bus;
 //---------------------------{其他交互信号}end---------------------------//
+
+//--------------------------{旁路信号}begin--------------------------//
+    wire       EXE_rf_wen;
+    wire       MEM_rf_wen;
+    wire [4:0] EXE_wdest;
+    wire [4:0] MEM_wdest;
+    wire [1:0] forwardA;
+    wire [1:0] forwardB;
+//---------------------------{旁路信号}end---------------------------//
 
 //-------------------------{各模块实例化}begin---------------------------//
     wire next_fetch; //即将运行取指模块，需要先锁存PC值
@@ -369,10 +390,17 @@ module mycpu_top(
         .test_data(rf_data)   // O, 32
     );
     
-    assign debug_wb_pc = WB_pc;
-    assign debug_wb_rf_wen = rf_wen;
-    assign debug_wb_rf_wdata = rf_wdata;
-    assign debug_wb_rf_wnum = rf_wdest;
+    bypass_control bypass_module(
+        .rs         (rs        ),
+        .rt         (rt        ),
+        .EXE_wdest  (EXE_wdest ),
+        .MEM_wdest  (MEM_wdest ),
+        .EXE_rf_wen (EXE_rf_wen),
+        .MEM_rf_wen (MEM_rf_wen),
+
+        .forwardA   (forwardA  ),
+        .forwardB   (forwardB  )
+    );
 
     // data_ram data_ram_module(   // 数据存储模块
     //     .clka   (clk         ),  // I, 1,  时钟
@@ -388,5 +416,11 @@ module mycpu_top(
     //     .doutb  (mem_data     ),  // I, 32, 写数据
     //     .dinb   (32'd0        )   // 不使用端口2的写功能
     // );
+
+    //测试程序testbench需要
+    assign debug_wb_pc = WB_pc;
+    assign debug_wb_rf_wen = rf_wen;
+    assign debug_wb_rf_wdata = rf_wdata;
+    assign debug_wb_rf_wnum = rf_wdest;
 //--------------------------{各模块实例化}end----------------------------//
 endmodule

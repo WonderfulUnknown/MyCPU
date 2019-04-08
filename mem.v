@@ -19,6 +19,7 @@ module mem(                          // 访存级
     //5级流水新增接口
     input              MEM_allow_in, // MEM级允许下级进入
     output     [  4:0] MEM_wdest,    // MEM级要写回寄存器堆的目标地址号
+    output             MEM_rf_wen,   // MEM级是否需要写回
      
     //展示PC
     output     [ 31:0] MEM_pc
@@ -68,6 +69,8 @@ module mem(                          // 访存级
             overflow,
             pc         } = EXE_MEM_bus_r;  
 //-----{EXE->MEM总线}end
+
+    assign MEM_rf_wen = rf_wen;
 
 //-----{load/store访存}begin
     wire inst_load;  //load操作

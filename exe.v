@@ -12,9 +12,10 @@ module exe(                         // 执行级
     output     [154:0] EXE_MEM_bus, // EXE->MEM总线
     
     //5级流水新增
-    input              clk,       // 时钟
+    input              clk,         // 时钟
     output     [  4:0] EXE_wdest,   // EXE级要写回寄存器堆的目标地址号
- 
+    output             EXE_rf_wen,  // EXE级是否需要写回
+
     //展示PC
     output     [ 31:0] EXE_pc
 );
@@ -68,6 +69,8 @@ module exe(                         // 执行级
             rf_wdest,
             pc          } = ID_EXE_bus_r;
 //-----{ID->EXE总线}end
+
+    assign EXE_rf_wen = rf_wen;
 
 //-----{ALU}begin
     wire [31:0] alu_result;
