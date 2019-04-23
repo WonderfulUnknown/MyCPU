@@ -166,7 +166,7 @@ module mycpu_top(
     
     //锁存以上总线信号
     reg [ 63:0] IF_ID_bus_r;
-    reg [167:0] ID_EXE_bus_r;
+    reg [169:0] ID_EXE_bus_r;
     reg [154:0] EXE_MEM_bus_r;
     reg [118:0] MEM_WB_bus_r;
     
@@ -257,6 +257,19 @@ module mycpu_top(
     wire [4:0] MEM_wdest;
     wire [1:0] forwardA;
     wire [1:0] forwardB;
+
+    //旁路数据通道
+    wire [31:0] to_alu;
+    wire [31:0] exe_result;
+    wire [31:0] mem_result;
+
+    //！总线改变的时候记得修改位数 
+    //应该是在高位 通过波形图信号来检验
+    assign exe_result = EXE_MEM_bus[132:101];// 168 -36
+    assign mem_result = MEM_WB_bus[149:117];// 155-6
+    //应该在下一个周期才把数据给出，考虑如何实现
+    assign to_alu     = forwardA ? exe_result : 
+                        forwardB ? mem_result : 32'x0000;
 //---------------------------{旁路信号}end---------------------------//
 
 //-------------------------{各模块实例化}begin---------------------------//
@@ -315,9 +328,13 @@ module mycpu_top(
         //5级流水新增
         .clk         (clk         ),  // I, 1
         .EXE_wdest   (EXE_wdest   ),  // O, 5
-        
+        .EXE_rf_wen  (EXE_rf_wen  ),
+
         //展示PC
-        .EXE_pc      (EXE_pc      )   // O, 32
+        .EXE_pc      (EXE_pc      ),   // O, 32
+        
+        //旁路数据
+        .to_alu      (to_alu      )
     );
 
     mem MEM_module(                     // 访存级
@@ -340,7 +357,8 @@ module mycpu_top(
         //5级流水新增接口
         .MEM_allow_in (MEM_allow_in ),  // I, 1
         .MEM_wdest    (MEM_wdest    ),  // O, 5
-        
+        .MEM_rf_wen   (MEM_rf_wen   ),
+
         //展示PC
         .MEM_pc       (MEM_pc       )   // O, 32
     );          
