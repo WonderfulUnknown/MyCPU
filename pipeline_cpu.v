@@ -166,7 +166,7 @@ module mycpu_top(
     
     //锁存以上总线信号
     reg [ 63:0] IF_ID_bus_r;
-    reg [169:0] ID_EXE_bus_r;
+    reg [170:0] ID_EXE_bus_r;
     reg [154:0] EXE_MEM_bus_r;
     reg [118:0] MEM_WB_bus_r;
     

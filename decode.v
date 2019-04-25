@@ -210,7 +210,7 @@ module decode(                      // 译码级
 
     //是否是R型指令 !可能会有遗漏
     wire inst_R;
-    assign inst_R = !(inst_no_rs | inst_no_rt);
+    assign inst_R = !(inst_no_rs | inst_no_rt | inst_sll);
 //-----{指令译码}end
 
 //-----{分支指令执行}begin

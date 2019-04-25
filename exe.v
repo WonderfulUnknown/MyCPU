@@ -77,6 +77,7 @@ module exe(                         // 执行级
             rf_wdest,
             rs_wait,
             rt_wait,
+            inst_R,
             pc          } = ID_EXE_bus_r;
 //-----{ID->EXE总线}end
 
@@ -84,15 +85,19 @@ module exe(                         // 执行级
 
 //-----{ALU}begin
     wire [31:0] alu_result;
-    
+    wire [31:0] alu_src1;
+    wire [31:0] alu_src2;
     //旁路 可能有错
-    assign alu_operand1 = (inst_R & rs_wait) ? to_alu : alu_operand1;
-    assign alu_operand2 = (inst_R & rs_wait) ? to_alu : alu_operand2;
-    
+    //assign alu_operand1 = (inst_R & rs_wait) ? to_alu : alu_operand1;
+    //assign alu_operand2 = (inst_R & rt_wait) ? to_alu : alu_operand2;
+    assign alu_src1 = (inst_R & rs_wait) ? to_alu : alu_operand1;
+    assign alu_src2 = (inst_R & rt_wait) ? to_alu : alu_operand2;
     alu alu_module(
         .alu_control  (alu_control ),  // I, 12, ALU控制信号
-        .alu_src1     (alu_operand1),  // I, 32, ALU操作数1
-        .alu_src2     (alu_operand2),  // I, 32, ALU操作数2
+        //.alu_src1     (alu_operand1),  // I, 32, ALU操作数1
+        //.alu_src2     (alu_operand2),  // I, 32, ALU操作数2
+        .alu_src1     (alu_src1),
+        .alu_src2     (alu_src2),
         .alu_result   (alu_result  ),  // O, 32, ALU结果
         .cout         (cout)           // O,  1, 是否溢出
     );
