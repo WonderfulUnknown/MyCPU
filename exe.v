@@ -7,7 +7,7 @@
 //*************************************************************************
 module exe(                         // 执行级
     input              EXE_valid,   // 执行级有效信号
-    input      [169:0] ID_EXE_bus_r,// ID->EXE总线
+    input      [170:0] ID_EXE_bus_r,// ID->EXE总线
     output             EXE_over,    // EXE模块执行完成
     output     [154:0] EXE_MEM_bus, // EXE->MEM总线
     
@@ -30,11 +30,13 @@ module exe(                         // 执行级
     wire [11:0] alu_control;
     wire [31:0] alu_operand1;
     wire [31:0] alu_operand2;
+
     //new
     wire checkoverflow;    //是否检测溢出
     //旁路
     wire rs_wait;
     wire rt_wait;
+    wire inst_R;
 
     //访存需要用到的load/store信息
     wire [ 3:0] mem_control;  //MEM需要使用的控制信号
@@ -84,8 +86,8 @@ module exe(                         // 执行级
     wire [31:0] alu_result;
     
     //旁路 可能有错
-    assign alu_operand1 = rs_wait ? to_alu : rs_wait;
-    assign alu_operand2 = rt_wait ? to_alu : rt_wait;
+    assign alu_operand1 = (inst_R & rs_wait) ? to_alu : alu_operand1;
+    assign alu_operand2 = (inst_R & rs_wait) ? to_alu : alu_operand2;
     
     alu alu_module(
         .alu_control  (alu_control ),  // I, 12, ALU控制信号

@@ -15,7 +15,7 @@ module decode(                      // 译码级
     output     [ 32:0] jbr_bus,     // 跳转总线
 //  output             inst_jbr,    // 指令为跳转分支指令,五级流水不需要
     output             ID_over,     // ID模块执行完成
-    output     [169:0] ID_EXE_bus,  // ID->EXE总线
+    output     [170:0] ID_EXE_bus,  // ID->EXE总线
     
     //5级流水新增
     input              IF_over,     //对于分支指令，需要该信号
@@ -207,6 +207,10 @@ module decode(                      // 译码级
                       | inst_BGEZ  | inst_load | inst_imm_zero
                       | inst_J     | inst_JAL  | inst_MFC0
                       | inst_SYSCALL;
+
+    //是否是R型指令 !可能会有遗漏
+    wire inst_R;
+    assign inst_R = !(inst_no_rs | inst_no_rt);
 //-----{指令译码}end
 
 //-----{分支指令执行}begin
@@ -349,7 +353,7 @@ module decode(                      // 译码级
                          mtc0,mfc0,cp0r_addr,syscall,eret,     //WB需用的信号,新增
                          rf_wen, rf_wdest,                     //WB需用的信号   
                          //new 旁路需要
-                         rs_wait,rt_wait,         
+                         rs_wait,rt_wait,inst_R,     
                          pc};                                  //PC值
 //-----{ID->EXE总线}end
 

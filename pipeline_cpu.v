@@ -160,7 +160,7 @@ module mycpu_top(
 
 //--------------------------{5级间的总线}begin---------------------------//
     wire [ 63:0] IF_ID_bus;   // IF->ID级总线
-    wire [167:0] ID_EXE_bus;  // ID->EXE级总线
+    wire [170:0] ID_EXE_bus;  // ID->EXE级总线
     wire [154:0] EXE_MEM_bus; // EXE->MEM级总线
     wire [118:0] MEM_WB_bus;  // MEM->WB级总线
     
@@ -255,8 +255,10 @@ module mycpu_top(
     wire       MEM_rf_wen;
     wire [4:0] EXE_wdest;
     wire [4:0] MEM_wdest;
-    wire [1:0] forwardA;
-    wire [1:0] forwardB;
+    //wire [1:0] forwardA;
+    //wire [1:0] forwardB;
+    wire         forwardA;
+    wire         forwardB;
 
     //旁路数据通道
     wire [31:0] to_alu;
@@ -269,7 +271,7 @@ module mycpu_top(
     assign mem_result = MEM_WB_bus[149:117];// 155-6
     //应该在下一个周期才把数据给出，考虑如何实现
     assign to_alu     = forwardA ? exe_result : 
-                        forwardB ? mem_result : 32'x0000;
+                        forwardB ? mem_result : 32'h0000;
 //---------------------------{旁路信号}end---------------------------//
 
 //-------------------------{各模块实例化}begin---------------------------//

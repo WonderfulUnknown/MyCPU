@@ -7,16 +7,16 @@
 module bypass_control(
     input   [4:0] rs,          
     input   [4:0] rt,                  
-    input   [4:0] EXE_wdest;  
-    input   [4:0] MEM_wdest;
-    input         EXE_rf_wen;
-    input         MEM_rf_wen;
+    input   [4:0] EXE_wdest,
+    input   [4:0] MEM_wdest,
+    input         EXE_rf_wen,
+    input         MEM_rf_wen,
 
     //旁路数据的去向
     //output  [1:0] forwardA;
     //output  [1:0] forwardB;
-    output  forwardA;
-    output  forwardB;
+    output  forwardA,
+    output  forwardB
 );   
     //!!!!需要检测发生冒险的情况是否真的需要写回
     //也就是检测处于EXE，MEM阶段的rf_wen信号是否有效
