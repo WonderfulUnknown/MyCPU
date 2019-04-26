@@ -136,7 +136,7 @@ module decode(                      // 译码级
     //lab3-2 溢出报错指令
     assign inst_ADD   = op_zero & sa_zero & (funct == 6'b100000);//加法
     assign inst_ADDI  = op == 6'b001000;//rt = rs + imm
-    assign inst_SUB   = op_zero & sa_zero & (funct == 6'b100011);//无符号减法
+    assign inst_SUB   = op_zero & sa_zero & (funct == 6'b100010);//无符号减法
     
     //跳转分支指令
     wire inst_jr;    //寄存器跳转指令
@@ -180,7 +180,7 @@ module decode(                      // 译码级
     wire inst_imm_zero; //立即数0扩展
     wire inst_imm_sign; //立即数符号扩展
     assign inst_imm_zero = inst_ANDI  | inst_LUI  | inst_ORI  | inst_XORI;
-    assign inst_imm_sign = inst_ADD  | inst_ADDIU | inst_ADDI 
+    assign inst_imm_sign = inst_ADDIU | inst_ADDI 
                          | inst_SLTI | inst_SLTIU
                          | inst_load | inst_store;
     
