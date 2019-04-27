@@ -268,7 +268,7 @@ module mycpu_top(
     //！总线改变的时候记得修改位数 
     //应该是在高位 通过波形图信号来检验
     assign exe_result = EXE_MEM_bus[132:101];// 168 -36
-    assign mem_result = MEM_WB_bus[149:117];// 155-6
+    assign mem_result = MEM_WB_bus[113:81];// 119-6
     //应该在下一个周期才把数据给出，考虑如何实现
     assign to_alu     = forwardA ? exe_result : 
                         forwardB ? mem_result : 32'h0000;

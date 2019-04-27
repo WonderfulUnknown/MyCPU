@@ -249,7 +249,12 @@ module decode(                      // 译码级
     wire [31:0] jbr_target;
     assign jbr_taken = (j_taken | br_taken) & ID_over; 
     assign jbr_target = j_taken ? j_target : br_target;
-    
+    //maybe
+    // always @ (*) 
+    // begin
+    //     if(!jbr_taken)
+    //         jbr_target = 32'h0000;
+    // end
     //ID到IF的跳转总线
     assign jbr_bus = {jbr_taken, jbr_target};
 //-----{分支指令执行}end

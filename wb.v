@@ -189,7 +189,8 @@ module wb(                       // 写回级
 //-----{Exception pc信号}begin
     wire        exc_valid;
     wire [31:0] exc_pc;
-    assign exc_valid = (syscall | eret | overflow) & WB_valid;
+    //assign exc_valid = (syscall | eret | overflow) & WB_valid;
+    assign exc_valid =(syscall | eret) & WB_valid;
     //eret返回地址为EPC寄存器的值
     //SYSCALL的excPC应该为{EBASE[31:10],10'h180},
     //但作为实验，先设置EXC_ENTER_ADDR为0，方便测试程序的编写
