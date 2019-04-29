@@ -7,7 +7,7 @@
 //*************************************************************************
 module exe(                         // 执行级
     input              EXE_valid,   // 执行级有效信号
-    input      [170:0] ID_EXE_bus_r,// ID->EXE总线
+    input      [171:0] ID_EXE_bus_r,// ID->EXE总线
     output             EXE_over,    // EXE模块执行完成
     output     [154:0] EXE_MEM_bus, // EXE->MEM总线
     
@@ -25,6 +25,7 @@ module exe(                         // 执行级
 //-----{ID->EXE总线}begin
     //EXE需要用到的信息
     wire multiply;         //乘法
+    wire divide;           //除法
     wire mthi;             //MTHI
     wire mtlo;             //MTLO
     wire [11:0] alu_control;
@@ -58,6 +59,7 @@ module exe(                         // 执行级
     //pc
     wire [31:0] pc;
     assign {multiply,
+            divide,
             mthi,
             mtlo,
             alu_control,
@@ -118,6 +120,12 @@ module exe(                         // 执行级
         .mult_end  (mult_end  )
     );
 //-----{乘法器}end
+
+//-----{除法器}begin
+
+//!!!!!!!!!!!需要添加
+
+//-----{除法器}end
 
 //-----{EXE执行完成}begin
     //对于ALU操作，都是1拍可完成，
