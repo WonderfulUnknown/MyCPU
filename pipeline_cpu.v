@@ -255,10 +255,14 @@ module mycpu_top(
     wire       MEM_rf_wen;
     wire [4:0] EXE_wdest;
     wire [4:0] MEM_wdest;
-    //wire [1:0] forwardA;
-    //wire [1:0] forwardB;
     wire         forwardA;
     wire         forwardB;
+
+    //某些特殊指令需要
+    wire        id_need_rs;
+    wire        id_need_rt;
+    wire [31:0] to_id_rs;
+    wire [31:0] to_id_rt;
 
     //旁路数据通道
     wire [31:0] to_alu;
@@ -266,12 +270,18 @@ module mycpu_top(
     wire [31:0] mem_result;
 
     //！总线改变的时候记得修改位数 
-    //应该是在高位 通过波形图信号来检验
     assign exe_result = EXE_MEM_bus[132:101];// 168 -36
     assign mem_result = MEM_WB_bus[113:81];// 119-6
-    //应该在下一个周期才把数据给出，考虑如何实现
+    //应该在下一个周期才把数据给出
     assign to_alu     = forwardA ? exe_result : 
                         forwardB ? mem_result : 32'h0000;
+
+    assign to_id_rs   = !id_need_rs ? rs_value :
+                        forwardA    ? exe_result :
+                        forwardB    ? mem_result : rs_value;
+    // assign to_id_rt   = !id_need_rt ? rt_value :
+    //                     forwardA    ? exe_result :
+    //                     forwardB    ? mem_result : rt_value;  
 //---------------------------{旁路信号}end---------------------------//
 
 //-------------------------{各模块实例化}begin---------------------------//
@@ -302,8 +312,10 @@ module mycpu_top(
     decode ID_module(               // 译码级
         .ID_valid   (ID_valid   ),  // I, 1
         .IF_ID_bus_r(IF_ID_bus_r),  // I, 64
-        .rs_value   (rs_value   ),  // I, 32
+        // .rs_value   (rs_value   ),  // I, 32
         .rt_value   (rt_value   ),  // I, 32
+        .rs_value   (to_id_rs   ),
+        // .rt_value   (to_id_rt   ),
         .rs         (rs         ),  // O, 5
         .rt         (rt         ),  // O, 5
         .jbr_bus    (jbr_bus    ),  // O, 33
@@ -317,6 +329,10 @@ module mycpu_top(
         .MEM_wdest   (MEM_wdest   ),// I, 5
         .WB_wdest    (WB_wdest    ),// I, 5
         
+        //旁路信号
+        .id_need_rs  (id_need_rs  ),
+        .id_need_rt  (id_need_rt  ),
+
         //展示PC
         .ID_pc       (ID_pc       ) // O, 32
     ); 

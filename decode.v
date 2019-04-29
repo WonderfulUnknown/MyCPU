@@ -23,6 +23,10 @@ module decode(                      // 译码级
     input      [  4:0] MEM_wdest,   // MEM级要写回寄存器堆的目标地址号
     input      [  4:0] WB_wdest,    // WB级要写回寄存器堆的目标地址号
     
+    //旁路信号
+    input              id_need_rs,  //某些指令需要使用rs寄存器的值进行判断
+    input              id_need_rt,  //需要rt
+
     //展示PC
     output     [ 31:0] ID_pc
 );
@@ -265,7 +269,15 @@ module decode(                      // 译码级
                     | inst_BLEZ & (rs_ltz | rs_ez)  // 小于等于0跳转
                     | inst_BLTZ & rs_ltz            // 小于0跳转
                     | inst_BGEZAL & ~rs_ltz         // 大于等于0跳转,修改31号寄存器
-                    | inst_BGEZAL & rs_ltz;         // 小于0跳转,修改31号寄存器
+                    | inst_BLTZAL & rs_ltz;         // 小于0跳转,修改31号寄存器
+    
+    //解决ID阶段rs数据相关 !可能不完全
+    // assign id_need_rs = inst_BEQ  | inst_BNE
+    //                   | inst_BGEZ | inst_BGTZ
+    //                   | inst_BLEZ | inst_BLTZ 
+    //                   | inst_BGEZAL | inst_BLTZAL;
+    assign id_need_rs = inst_BGEZAL | inst_BLTZAL;
+    assign id_need_rt = inst_BEQ  | inst_BNE;
 
     // 分支跳转目标地址：PC=PC+offset<<2
     assign br_target[31:2] = bd_pc[31:2] + {{14{offset[15]}}, offset};  
@@ -379,7 +391,7 @@ module decode(                      // 译码级
                       inst_wdest_31 ? 5'd31 :  //以便能准确判断数据相关
                       inst_wdest_rd ? rd : 5'd0;
     assign store_data = rt_value;
-    assign ID_EXE_bus = {multiply,divide,mthi,mtlo,                   //EXE需用的信息,新增
+    assign ID_EXE_bus = {multiply,divide,mthi,mtlo,            //EXE需用的信息,新增
                          alu_control,alu_operand1,alu_operand2,//EXE需用的信息
                          check_overflow,                       //EXE需用的信息，判断是否需要检测溢出       
                          mem_control,store_data,               //MEM需用的信号

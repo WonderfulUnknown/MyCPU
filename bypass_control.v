@@ -13,17 +13,11 @@ module bypass_control(
     input         MEM_rf_wen,
 
     //旁路数据的去向
-    //output  [1:0] forwardA;
-    //output  [1:0] forwardB;
     output  forwardA,
     output  forwardB
 );   
     //!!!!需要检测发生冒险的情况是否真的需要写回
     //也就是检测处于EXE，MEM阶段的rf_wen信号是否有效
-
-    //可以考虑把decode.v中的rs_wait和rt_wait信号传出来
-    // wire rs_wait;
-    // wire rt_wait;
     wire EXE_hazard;
     wire MEM_hazard;
     assign EXE_hazard = (rs==EXE_wdest) | (rt==EXE_wdest);
