@@ -4,7 +4,6 @@
 
 - 实现新增指令
 DIV DIVU MULTU
-BLTZAL BGEZAL
 - 乘除法调用IP核
 - 自己实现乘除法器 乘法采用 booth 算法+华莱士、除法采用迭代算法
 - 通过lab3-3
@@ -15,6 +14,7 @@ BLTZAL BGEZAL
 - 计组实验实现的指令
 MULT, MFLO, MFHI, MTLO, MTHI
 BGEZ, BGTZ, BLTZ, BLEZ, JALR
+- 自己实现的BLTZAL BGEZAL
 - 能检测到未完成的指令,功能为能实现
 
 - 根据之前的代码实现了 MULTU(未给出无符号信号)
@@ -23,6 +23,7 @@ BGEZ, BGTZ, BLTZ, BLEZ, JALR
 ## problem
 
 - 为什么ALU操作码要用独热编码,优势?
+- reg信号和wire信号的区别
 
 ## thinking
 
@@ -56,6 +57,14 @@ BGEZ, BGTZ, BLTZ, BLEZ, JALR
 如果寄存器 rs 的值大于等于 0 则转移,否则顺序执行。转移目标由立即数 offset 左移 2 位并进行有
 符号扩展的值加上该分支指令对应的延迟槽指令的 PC 计算得到。无论转移与否,将该分支对应延
 迟槽指令之后的指令的 PC 值保存至第 31 号通用寄存器中。
+
+### MFHI
+
+将HI寄存器的值写入寄存器rd中
+
+### MFLO
+
+将LO寄存器的值写入寄存器rd中
 
 ## debug
 
@@ -91,4 +100,6 @@ BGEZ, BGTZ, BLTZ, BLEZ, JALR
 --------------------------------------------------------------
 ```
 
-0xbfc1061c inst_MFLO 未自己处理过
+0xbfc1061c inst_MFLO  LO_result一直为xxxx
+感觉貌似是没有进行过MULT 就使用lo_result出错?
+有条div指令,先实现

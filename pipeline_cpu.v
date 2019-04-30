@@ -257,6 +257,8 @@ module mycpu_top(
     wire [4:0] MEM_wdest;
     wire         forwardA;
     wire         forwardB;
+    wire         rs_wait;
+    wire         rt_wait;
 
     //某些特殊指令需要
     wire        id_need_rs;
@@ -276,12 +278,12 @@ module mycpu_top(
     assign to_alu     = forwardA ? exe_result : 
                         forwardB ? mem_result : 32'h0000;
 
-    assign to_id_rs   = !id_need_rs ? rs_value :
+    assign to_id_rs   = !(id_need_rs & rs_wait) ? rs_value :
                         forwardA    ? exe_result :
                         forwardB    ? mem_result : rs_value;
-    // assign to_id_rt   = !id_need_rt ? rt_value :
-    //                     forwardA    ? exe_result :
-    //                     forwardB    ? mem_result : rt_value;  
+    assign to_id_rt   = !(id_need_rt & rt_wait) ? rt_value :
+                        forwardA    ? exe_result :
+                        forwardB    ? mem_result : rt_value;  
 //---------------------------{旁路信号}end---------------------------//
 
 //-------------------------{各模块实例化}begin---------------------------//
@@ -313,9 +315,9 @@ module mycpu_top(
         .ID_valid   (ID_valid   ),  // I, 1
         .IF_ID_bus_r(IF_ID_bus_r),  // I, 64
         // .rs_value   (rs_value   ),  // I, 32
-        .rt_value   (rt_value   ),  // I, 32
+        // .rt_value   (rt_value   ),  // I, 32
         .rs_value   (to_id_rs   ),
-        // .rt_value   (to_id_rt   ),
+        .rt_value   (to_id_rt   ),
         .rs         (rs         ),  // O, 5
         .rt         (rt         ),  // O, 5
         .jbr_bus    (jbr_bus    ),  // O, 33
@@ -332,6 +334,8 @@ module mycpu_top(
         //旁路信号
         .id_need_rs  (id_need_rs  ),
         .id_need_rt  (id_need_rt  ),
+        .rs_wait     (rs_wait     ),
+        .rt_wait     (rt_wait     ),
 
         //展示PC
         .ID_pc       (ID_pc       ) // O, 32

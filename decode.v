@@ -26,6 +26,8 @@ module decode(                      // 译码级
     //旁路信号
     input              id_need_rs,  //某些指令需要使用rs寄存器的值进行判断
     input              id_need_rt,  //需要rt
+    output             rs_wait,
+    output             rt_wait,
 
     //展示PC
     output     [ 31:0] ID_pc
@@ -272,10 +274,10 @@ module decode(                      // 译码级
                     | inst_BLTZAL & rs_ltz;         // 小于0跳转,修改31号寄存器
     
     //解决ID阶段rs数据相关 !可能不完全
-    // assign id_need_rs = inst_BEQ  | inst_BNE
-    //                   | inst_BGEZ | inst_BGTZ
-    //                   | inst_BLEZ | inst_BLTZ 
-    //                   | inst_BGEZAL | inst_BLTZAL;
+    assign id_need_rs = inst_BEQ  | inst_BNE
+                      | inst_BGEZ | inst_BGTZ
+                      | inst_BLEZ | inst_BLTZ 
+                      | inst_BGEZAL | inst_BLTZAL;
     assign id_need_rs = inst_BGEZAL | inst_BLTZAL;
     assign id_need_rt = inst_BEQ  | inst_BNE;
 
@@ -300,8 +302,8 @@ module decode(                      // 译码级
 
 //-----{ID执行完成}begin
     //由于是流水的，存在数据相关
-    wire rs_wait;
-    wire rt_wait;
+    // wire rs_wait;
+    // wire rt_wait;
     //从rs(非0号寄存器)中取值，且存在数据相关
     assign rs_wait = ~inst_no_rs & (rs!=5'd0)
                    & ( (rs==EXE_wdest) | (rs==MEM_wdest) | (rs==WB_wdest) );
