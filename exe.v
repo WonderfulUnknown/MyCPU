@@ -7,7 +7,7 @@
 //*************************************************************************
 module exe(                         // 执行级
     input              EXE_valid,   // 执行级有效信号
-    input      [171:0] ID_EXE_bus_r,// ID->EXE总线
+    input      [173:0] ID_EXE_bus_r,// ID->EXE总线
     output             EXE_over,    // EXE模块执行完成
     output     [154:0] EXE_MEM_bus, // EXE->MEM总线
     
@@ -28,12 +28,17 @@ module exe(                         // 执行级
     wire divide;           //除法
     wire mthi;             //MTHI
     wire mtlo;             //MTLO
+    wire mult_sign;
+    wire div_sign;
     wire [11:0] alu_control;
     wire [31:0] alu_operand1;
     wire [31:0] alu_operand2;
 
     //new
     wire checkoverflow;    //是否检测溢出
+    wire overflow; //特定指令需要检测结果是否溢出
+    wire cout;     //加法器的进位
+
     //旁路
     wire rs_wait;
     wire rt_wait;
@@ -53,15 +58,15 @@ module exe(                         // 执行级
     wire       eret;
     wire       rf_wen;    //写回的寄存器写使能
     wire [4:0] rf_wdest;  //写回的目的寄存器
-    //new 后面所有的bus加一位
-    wire overflow; //特定指令需要检测结果是否溢出
-    wire cout;     //加法器的进位
+    
     //pc
     wire [31:0] pc;
     assign {multiply,
             divide,
             mthi,
             mtlo,
+            mult_sign,
+            div_sign,
             alu_control,
             alu_operand1,
             alu_operand2,
@@ -82,8 +87,6 @@ module exe(                         // 执行级
             inst_R,
             pc          } = ID_EXE_bus_r;
 //-----{ID->EXE总线}end
-
-    assign EXE_rf_wen = rf_wen;
 
 //-----{ALU}begin
     wire [31:0] alu_result;
@@ -109,11 +112,12 @@ module exe(                         // 执行级
     wire        mult_begin; 
     wire [63:0] product; 
     wire        mult_end;
-    
+
     assign mult_begin = multiply & EXE_valid;
     multiply multiply_module (
         .clk       (clk       ),
-        .mult_begin(mult_begin  ),
+        .mult_begin(mult_begin),
+        .mult_sign (mult_sign ),
         .mult_op1  (alu_operand1), 
         .mult_op2  (alu_operand2),
         .product   (product   ),
@@ -122,21 +126,39 @@ module exe(                         // 执行级
 //-----{乘法器}end
 
 //-----{除法器}begin
+    wire        div_begin; 
+    wire [31:0] quotient;
+    wire [31:0] remainder; 
+    wire        div_end;
 
-//!!!!!!!!!!!需要添加
-
+    assign div_begin = divide & EXE_valid;
+    divide divide_module (
+        .clk          (clk         ),
+        .div_begin    (div_begin   ),
+        .div_sign     (div_sign    ),
+        .div_op1      (alu_operand1), 
+        .div_op2      (alu_operand2),
+        .div_result   (quotient    ),
+        .div_remainder(remainder   ),
+        .div_end      (div_end     )
+    );
 //-----{除法器}end
 
 //-----{EXE执行完成}begin
     //对于ALU操作，都是1拍可完成，
-    //但对于乘法操作，需要多拍完成
-    assign EXE_over = EXE_valid & (~multiply | mult_end);
+    //但对于乘除法操作，需要多拍完成
+    assign EXE_over = EXE_valid & (~multiply | mult_end) 
+                      & (~divide | div_end);
 //-----{EXE执行完成}end
 
 //-----{EXE模块的dest值}begin
    //只有在EXE模块有效时，其写回目的寄存器号才有意义
     assign EXE_wdest = rf_wdest & {5{EXE_valid}};
 //-----{EXE模块的dest值}end
+
+//-----{EXE模块的rf_wen值}begin
+    assign EXE_rf_wen = rf_wen;
+//-----{EXE模块的rf_wen值}end
 
 //-----{EXE->MEM总线}begin
     wire [31:0] exe_result;   //在exe级能确定的最终写回结果
@@ -147,10 +169,14 @@ module exe(                         // 执行级
     //要写入LO的值放在lo_result里，包括MULT和MTLO指令,
     assign exe_result = mthi     ? alu_operand1 :
                         mtc0     ? alu_operand2 : 
-                        multiply ? product[63:32] : alu_result;
-    assign lo_result  = mtlo ? alu_operand1 : product[31:0];
-    assign hi_write   = multiply | mthi;
-    assign lo_write   = multiply | mtlo;
+                        multiply ? product[63:32] : 
+                        divide   ? remainder : alu_result;
+    assign lo_result  = mtlo ? alu_operand1 : 
+                        multiply ? product[31:0] : quotient;
+    assign hi_write   = multiply | divide | mthi;
+    assign lo_write   = multiply | divide | mtlo;
+    
+    //new
     assign overflow   = checkoverflow ? cout : 0;
 
     assign EXE_MEM_bus = {mem_control,store_data,          //load/store信息和store数据

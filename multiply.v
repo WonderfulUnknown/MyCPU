@@ -8,6 +8,7 @@
 module multiply(              // 乘法器
     input         clk,        // 时钟
     input         mult_begin, // 乘法开始信号
+    input         mult_sign,  // 是否为有符号乘法
     input  [31:0] mult_op1,   // 乘法源操作数1
     input  [31:0] mult_op2,   // 乘法源操作数2
     output [63:0] product,    // 乘积
@@ -34,11 +35,14 @@ module multiply(              // 乘法器
     wire        op2_sign;      //操作数2的符号位
     wire [31:0] op1_absolute;  //操作数1的绝对值
     wire [31:0] op2_absolute;  //操作数2的绝对值
-    assign op1_sign = mult_op1[31];
-    assign op2_sign = mult_op2[31];
-    assign op1_absolute = op1_sign ? (~mult_op1+1) : mult_op1;
-    assign op2_absolute = op2_sign ? (~mult_op2+1) : mult_op2;
-
+    // assign op1_sign = mult_op1[31];
+    // assign op2_sign = mult_op2[31];
+    // assign op1_absolute = op1_sign ? (~mult_op1+1) : mult_op1;
+    // assign op2_absolute = op2_sign ? (~mult_op2+1) : mult_op2;
+	assign op1_sign = mult_sign ? mult_op1[31] : 1'b0;
+	assign op2_sign = mult_sign ? mult_op2[31] : 1'b0;
+	assign op1_absolute = ~mult_sign ? mult_op1 : op1_sign ? (~mult_op1+1) : mult_op1;
+    assign op2_absolute = ~mult_sign ? mult_op2 : op2_sign ? (~mult_op2+1) : mult_op2;
     //加载被乘数，运算时每次左移一位
     reg  [63:0] multiplicand;
     always @ (posedge clk)

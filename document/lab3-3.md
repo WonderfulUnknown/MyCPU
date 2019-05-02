@@ -4,9 +4,12 @@
 
 - 实现新增指令
 DIV DIVU MULTU
+- 通过lab3-3
+
+> 可选
+
 - 乘除法调用IP核
 - 自己实现乘除法器 乘法采用 booth 算法+华莱士、除法采用迭代算法
-- 通过lab3-3
 
 ## done
 
@@ -15,10 +18,8 @@ DIV DIVU MULTU
 MULT, MFLO, MFHI, MTLO, MTHI
 BGEZ, BGTZ, BLTZ, BLEZ, JALR
 - 自己实现的BLTZAL BGEZAL
-- 能检测到未完成的指令,功能为能实现
-
 - 根据之前的代码实现了 MULTU(未给出无符号信号)
-  BLTZAL,BGEZAL(未验证)
+  BLTZAL,BGEZAL(已验证)
 
 ## problem
 
@@ -27,7 +28,6 @@ BGEZ, BGTZ, BLTZ, BLEZ, JALR
 
 ## thinking
 
-- 计组实现的指令需要看懂
 - 乘法器部分需要看懂  
 - 需要区别有符号乘法和无符号乘法,未给出能进行识别的信号
 - 除法先参考计组书来实现
@@ -38,6 +38,8 @@ BGEZ, BGTZ, BLTZ, BLEZ, JALR
 - 源码对链接跳转做了处理,给exe对应的pc和8作为两个操作数
 - **BGEZAL,BLTZAL这两条指令也需要用到rs_value,可能会有数据相关,需要给出冲突的信号** 源码已经处理了
 需要传递个信号,在ID阶段就把数据传递给rs(可能rt也需要这样处理)
+- 模仿乘法器写个除法器
+- 需要注意有符号乘法和除法,特别是有符号除法中商和余数的符号
 
 ## tips
 
@@ -103,3 +105,13 @@ BGEZ, BGTZ, BLTZ, BLEZ, JALR
 0xbfc1061c inst_MFLO  LO_result一直为xxxx
 感觉貌似是没有进行过MULT 就使用lo_result出错?
 有条div指令,先实现
+
+### 实现乘除法
+
+```c
+--------------------------------------------------------------
+[2291355 ns] Error!!!
+    reference: PC = 0xbfc1061c, wb_rf_wnum = 0x15, wb_rf_wdata = 0x00000002
+    mycpu    : PC = 0xbfc1061c, wb_rf_wnum = 0x15, wb_rf_wdata = 0x15b8b7a4
+--------------------------------------------------------------  
+```

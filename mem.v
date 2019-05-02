@@ -70,8 +70,6 @@ module mem(                          // 访存级
             pc         } = EXE_MEM_bus_r;  
 //-----{EXE->MEM总线}end
 
-    assign MEM_rf_wen = rf_wen;
-
 //-----{load/store访存}begin
     wire inst_load;  //load操作
     wire inst_store; //store操作
@@ -163,6 +161,10 @@ module mem(                          // 访存级
    //只有在MEM模块有效时，其写回目的寄存器号才有意义
     assign MEM_wdest = rf_wdest & {5{MEM_valid}};
 //-----{MEM模块的dest值}end
+
+//-----{MEM模块的rf_wen值}begin
+    assign MEM_rf_wen = rf_wen;
+//-----{MEM模块的rf_wen值}end
 
 //-----{MEM->WB总线}begin
     wire [31:0] mem_result; //MEM传到WB的result为load结果或EXE结果
