@@ -83,6 +83,12 @@ module decode(                      // 译码级
     wire inst_BGEZAL;
     wire inst_BLTZAL;
 
+    //lab3-4
+    wire inst_LH, inst_LHU;
+    wire inst_LWL, inst_LWR;
+    wire inst_SH;
+    wire inst_SWL, inst_SWR;
+
     wire op_zero;  // 操作码全0
     wire sa_zero;  // sa域全0
     assign op_zero = ~(|op);
@@ -160,6 +166,15 @@ module decode(                      // 译码级
     assign inst_BGEZAL = (op == 6'b000001) & (rt == 5'b10001); //rs值大于0转移,修改31号寄存器
     assign inst_BLTZAL = (op == 6'b000001) & (rt == 5'b10000); //rs值小于0转移,修改31号寄存器
 
+    //lab3-4
+    assign inst_LH    = (op == 6'b100001); //从内存装载半字,有符号扩展
+    assign inst_LHU   = (op == 6'b100101); //取半字无符号扩展
+    assign inst_LWL   = (op == 6'b100010); //非对齐地址取字至寄存器左部
+    assign inst_LWR   = (op == 6'b100110); //非对齐地址取字至寄存器右部
+    assign inst_SH    = (op == 6'b101001); //向内存装载半字
+    assign inst_SWL   = (op == 6'b101010); //寄存器左部存入非对齐地址
+    assign inst_SWR   = (op == 6'b101110); //寄存器右部存入非对齐地址
+
     //跳转分支指令
     wire inst_jr;    //寄存器跳转指令
     wire inst_j_link;//链接跳转指令
@@ -177,8 +192,11 @@ module decode(                      // 译码级
     //load store
     wire inst_load;
     wire inst_store;
-    assign inst_load  = inst_LW | inst_LB | inst_LBU;  // load指令
-    assign inst_store = inst_SW | inst_SB;             // store指令
+    assign inst_load  = inst_LW | inst_LB | inst_LBU
+                      | inst_LH | inst_LHU 
+                      | inst_LWL | inst_LWR;  // load指令
+    assign inst_store = inst_SW | inst_SB
+                      | inst_SH | inst_SWL | inst_SWR;   // store指令
     
     //alu操作分类
     wire inst_add, inst_sub, inst_slt,inst_sltu;
@@ -290,12 +308,7 @@ module decode(                      // 译码级
     wire [31:0] jbr_target;
     assign jbr_taken = (j_taken | br_taken) & ID_over; 
     assign jbr_target = j_taken ? j_target : br_target;
-    //maybe
-    // always @ (*) 
-    // begin
-    //     if(!jbr_taken)
-    //         jbr_target = 32'h0000;
-    // end
+
     //ID到IF的跳转总线
     assign jbr_bus = {jbr_taken, jbr_target};
 //-----{分支指令执行}end
@@ -366,7 +379,8 @@ module decode(                      // 译码级
                           inst_lui};
     //访存需要用到的load/store信息
     wire lb_sign;  //load一字节为有符号load
-    wire ls_word;  //load/store为字节还是字,0:byte;1:word
+    wire [1:0] ls_word;  //load/store为字节还是字
+                         //00:byte;01:word;10:half_world;11:                   
     wire [3:0] mem_control;  //MEM需要使用的控制信号
     wire [31:0] store_data;  //store操作的存的数据
     assign lb_sign = inst_LB;

@@ -1,4 +1,4 @@
-# 4.29-
+# 4.29-5.2
 
 ## todo
 
@@ -105,13 +105,3 @@ BGEZ, BGTZ, BLTZ, BLEZ, JALR
 0xbfc1061c inst_MFLO  LO_result一直为xxxx
 感觉貌似是没有进行过MULT 就使用lo_result出错?
 有条div指令,先实现
-
-### 实现乘除法
-
-```c
---------------------------------------------------------------
-[2291355 ns] Error!!!
-    reference: PC = 0xbfc1061c, wb_rf_wnum = 0x15, wb_rf_wdata = 0x00000002
-    mycpu    : PC = 0xbfc1061c, wb_rf_wnum = 0x15, wb_rf_wdata = 0x15b8b7a4
---------------------------------------------------------------  
-```

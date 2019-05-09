@@ -35,10 +35,7 @@ module multiply(              // 乘法器
     wire        op2_sign;      //操作数2的符号位
     wire [31:0] op1_absolute;  //操作数1的绝对值
     wire [31:0] op2_absolute;  //操作数2的绝对值
-    // assign op1_sign = mult_op1[31];
-    // assign op2_sign = mult_op2[31];
-    // assign op1_absolute = op1_sign ? (~mult_op1+1) : mult_op1;
-    // assign op2_absolute = op2_sign ? (~mult_op2+1) : mult_op2;
+    
 	assign op1_sign = mult_sign ? mult_op1[31] : 1'b0;
 	assign op2_sign = mult_sign ? mult_op2[31] : 1'b0;
 	assign op1_absolute = ~mult_sign ? mult_op1 : op1_sign ? (~mult_op1+1) : mult_op1;
