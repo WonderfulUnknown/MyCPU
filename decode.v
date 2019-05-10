@@ -296,7 +296,6 @@ module decode(                      // 译码级
                       | inst_BGEZ | inst_BGTZ
                       | inst_BLEZ | inst_BLTZ 
                       | inst_BGEZAL | inst_BLTZAL;
-    assign id_need_rs = inst_BGEZAL | inst_BLTZAL;
     assign id_need_rt = inst_BEQ  | inst_BNE;
 
     // 分支跳转目标地址：PC=PC+offset<<2
@@ -385,7 +384,7 @@ module decode(                      // 译码级
     wire [4:0] mem_control;  //MEM需要使用的控制信号
     wire [31:0] store_data;  //store操作的存的数据
     assign l_sign = inst_LB | inst_LH;
-    assign ls_word = {inst_LH | inst_SH,inst_LW | inst_SW};
+    assign ls_word = {inst_LH | inst_SH | inst_LHU,inst_LW | inst_SW};
     assign mem_control = {inst_load,
                           inst_store,
                           ls_word,

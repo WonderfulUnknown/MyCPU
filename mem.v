@@ -141,27 +141,32 @@ module mem(                          // 访存级
                 default : dm_wdata <= store_data;
             endcase
         end
+        else if(ls_word[0])
+        begin
+            dm_wdata <= store_data; 
+        end
     end
     
      //load读出的数据
     wire        load_sign;
     wire [31:0] load_result;
-    assign load_sign = (ls_word[1:0]==1'd2 && dm_addr[1]==1'b1)   ? dm_rdata[15] :
-                       (ls_word[1:0]==1'd0 && dm_addr[1:0]==2'd0) ? dm_rdata[ 7] :
-                       (ls_word[1:0]==1'd0 && dm_addr[1:0]==2'd1) ? dm_rdata[15] :
-                       (ls_word[1:0]==1'd0 && dm_addr[1:0]==2'd2) ? dm_rdata[23] : 
+
+    assign load_sign = (ls_word[1:0]==2'd2 && dm_addr[1]==1'b0)   ? dm_rdata[15] :
+                       (ls_word[1:0]==2'd0 && dm_addr[1:0]==2'd0) ? dm_rdata[ 7] :
+                       (ls_word[1:0]==2'd0 && dm_addr[1:0]==2'd1) ? dm_rdata[15] :
+                       (ls_word[1:0]==2'd0 && dm_addr[1:0]==2'd2) ? dm_rdata[23] : 
                                                                     dm_rdata[31] ;
-    assign load_result[ 7:0 ] = (ls_word[1:0]==1'd2 && dm_addr[1]==1'b1)   ? dm_rdata[23:16] :
+    assign load_result[ 7:0 ] = (ls_word[1:0]==2'd2 && dm_addr[1]==1'b1)   ? dm_rdata[23:16] :
                                 //(ls_word[1:0]==1'd2 && dm_addr[1]==1'b0)   ? dm_rdata[ 7:0 ] :
                                 //(ls_word[1:0]==1'd0 && dm_addr[1:0]==2'd0) ? dm_rdata[ 7:0 ] :
-                                (ls_word[1:0]==1'd0 && dm_addr[1:0]==2'd1) ? dm_rdata[15:8 ] :
-                                (ls_word[1:0]==1'd0 && dm_addr[1:0]==2'd2) ? dm_rdata[23:16] :
-                                (ls_word[1:0]==1'd0 && dm_addr[1:0]==2'd2) ? dm_rdata[31:24] :
+                                (ls_word[1:0]==2'd0 && dm_addr[1:0]==2'd1) ? dm_rdata[15:8 ] :
+                                (ls_word[1:0]==2'd0 && dm_addr[1:0]==2'd2) ? dm_rdata[23:16] :
+                                (ls_word[1:0]==2'd0 && dm_addr[1:0]==2'd3) ? dm_rdata[31:24] :
                                                                              dm_rdata[ 7:0 ] ;
-    assign load_result[15:8 ] = (ls_word[1:0]==1'd2 && dm_addr[1]==1'b1)   ? dm_rdata[31:24] :
-                                (ls_word[1:0]==1'd2 && dm_addr[1]==1'b0)   ? dm_rdata[15:8 ] :
-                                (ls_word[0]==1'd1) ? dm_rdata[15:8 ] : {8{l_sign & load_sign}};
-    assign load_result[31:16] = ls_word[0] ? dm_rdata[31:16] : {16{l_sign & load_sign}};
+    assign load_result[15:8 ] = (ls_word[1:0]==2'd2 && dm_addr[1]==1'b1)   ? dm_rdata[31:24] :
+                                (ls_word[1:0]==2'd2 && dm_addr[1]==1'b0)   ? dm_rdata[15:8 ] :
+                                ls_word[0] ? dm_rdata[15:8 ] : {8 {l_sign & load_sign}};
+    assign load_result[31:16] = (ls_word[1:0]==2'd1) ? dm_rdata[31:16] : {16{l_sign & load_sign}};
 //-----{load/store访存}end
 
 //-----{MEM执行完成}begin
