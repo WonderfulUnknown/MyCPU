@@ -16,7 +16,7 @@ module bypass_control(
     output  forwardA,
     output  forwardB
 );   
-    //!!!!需要检测发生冒险的情况是否真的需要写回
+    //!需要检测发生冒险的情况是否真的需要写回
     //也就是检测处于EXE，MEM阶段的rf_wen信号是否有效
     wire EXE_hazard;
     wire MEM_hazard;
