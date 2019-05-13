@@ -160,14 +160,14 @@ module mycpu_top(
 
 //--------------------------{5级间的总线}begin---------------------------//
     wire [ 63:0] IF_ID_bus;   // IF->ID级总线
-    wire [174:0] ID_EXE_bus;  // ID->EXE级总线
-    wire [155:0] EXE_MEM_bus; // EXE->MEM级总线
+    wire [177:0] ID_EXE_bus;  // ID->EXE级总线
+    wire [158:0] EXE_MEM_bus; // EXE->MEM级总线
     wire [118:0] MEM_WB_bus;  // MEM->WB级总线
     
     //锁存以上总线信号
     reg [ 63:0] IF_ID_bus_r;
-    reg [174:0] ID_EXE_bus_r;
-    reg [155:0] EXE_MEM_bus_r;
+    reg [177:0] ID_EXE_bus_r;
+    reg [158:0] EXE_MEM_bus_r;
     reg [118:0] MEM_WB_bus_r;
     
     //IF到ID的锁存信号
@@ -272,8 +272,8 @@ module mycpu_top(
     wire [31:0] mem_result;
 
     //!总线改变的时候记得修改位数 
-    assign exe_result = EXE_MEM_bus[132:101];
-    assign mem_result = MEM_WB_bus[113:81];
+    assign exe_result = EXE_MEM_bus[132:101];// 168-36
+    assign mem_result = MEM_WB_bus[113:81];// 119-6
     //应该在下一个周期才把数据给出
     assign to_alu     = forwardA ? exe_result : 
                         forwardB ? mem_result : 32'h0000;

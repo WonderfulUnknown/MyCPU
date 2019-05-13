@@ -15,7 +15,7 @@ module decode(                      // 译码级
     output     [ 32:0] jbr_bus,     // 跳转总线
 //  output             inst_jbr,    // 指令为跳转分支指令,五级流水不需要
     output             ID_over,     // ID模块执行完成
-    output     [174:0] ID_EXE_bus,  // ID->EXE总线
+    output     [177:0] ID_EXE_bus,  // ID->EXE总线
     
     //5级流水新增
     input              IF_over,     //对于分支指令，需要该信号
@@ -379,16 +379,30 @@ module decode(                      // 译码级
     //访存需要用到的load/store信息
     //load字节和半字时候需要考虑是否是有符号load
     wire l_sign;  //有符号load
-    wire [1:0] ls_word;  //load/store为字节还是字
-                         //00:byte;01:word;10:half_world;11:                   
-    wire [4:0] mem_control;  //MEM需要使用的控制信号
+    wire ls_word; //load/store为字
+    wire ls_byte; //load/store为字节
+    wire ls_half_word; //load/store为半字
+                         //00:byte;01:word;10:half_world
+    wire ls_unaligned;//非对齐存取字
+    wire direction;//左拼接还是右拼接    
+    wire [7:0] mem_control;  //MEM需要使用的控制信号
     wire [31:0] store_data;  //store操作的存的数据
-    assign l_sign = inst_LB | inst_LH;
-    assign ls_word = {inst_LH | inst_SH | inst_LHU,inst_LW | inst_SW};
+    
+    assign l_sign  = inst_LB | inst_LH;
+    assign ls_word = inst_LW | inst_SW;
+    assign ls_byte = inst_LB | inst_LBU | inst_SB;
+    assign ls_half_word = inst_LH | inst_LHU | inst_SH;
+    assign ls_unaligned = inst_LWL | inst_LWR | inst_SWL | inst_SWR;
+    assign direction = (inst_LWL | inst_SWL) ? 1'b1 : 1'b0; 
+    
     assign mem_control = {inst_load,
                           inst_store,
+                          l_sign,
                           ls_word,
-                          l_sign };
+                          ls_byte,
+                          ls_half_word,
+                          ls_unaligned,
+                          direction };
                           
     //写回需要用到的信息
     //对应某些特殊指令的信号
