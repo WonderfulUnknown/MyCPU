@@ -87,9 +87,12 @@ module mem(                          // 访存级
             ls_half_word,
             ls_unaligned,
             direction } = mem_control;
+
     //访存读写地址
     assign dm_addr = exe_result;
-    
+    //assign dm_addr[31:2] = exe_result[31:2];
+    //assign dm_addr[ 1:0] = ls_unaligned ? 2'd0 : exe_result[1:0];
+
     //(*)当begin end里面的任意信号发生变化时
     //会在当前begin end重新执行一遍begin end 
 
@@ -207,9 +210,8 @@ module mem(                          // 访存级
     //load读出的数据
     wire        load_sign;
     wire [31:0] load_result;
-    wire [31:0] left_result;
-    wire [31:0] right_result;
-                      //00:byte;01:word;10:half_world;11:  
+    reg  [31:0] unaligned_result;
+
     assign load_sign = (ls_half_word && dm_addr[1]==1'b0) ? dm_rdata[15] :
                        (ls_byte && dm_addr[1:0]==2'd0) ? dm_rdata[ 7] :
                        (ls_byte && dm_addr[1:0]==2'd1) ? dm_rdata[15] :
@@ -225,40 +227,30 @@ module mem(                          // 访存级
                                 ls_word ? dm_rdata[15:8 ] : {8 {l_sign & load_sign}};
     assign load_result[31:16] = ls_word ? dm_rdata[31:16] : {16{l_sign & load_sign}};
 
-    assign left_result[ 7:0 ] = (dm_addr[1:0]==1'd0) ? store_data[ 7:0 ]: 
-                                (dm_addr[1:0]==1'd1) ? store_data[ 7:0 ]: 
-                                (dm_addr[1:0]==1'd2) ? store_data[ 7:0 ]:
-                                                       dm_rdata[ 7:0 ];
-    assign left_result[15:8 ] = (dm_addr[1:0]==1'd0) ? store_data[15:8 ]:
-                                (dm_addr[1:0]==1'd1) ? store_data[15:8 ]:
-                                (dm_addr[1:0]==1'd2) ? dm_rdata[ 7:0 ]:
-                                                       dm_rdata[15:8 ];
-    assign left_result[23:16] = (dm_addr[1:0]==1'd0) ? store_data[23:16]: 
-                                (dm_addr[1:0]==1'd1) ? dm_rdata[ 7:0 ]:
-                                (dm_addr[1:0]==1'd2) ? dm_rdata[15:8]:
-                                                       dm_rdata[23:16];
-    assign left_result[31:24] = (dm_addr[1:0]==1'd0) ? dm_rdata[ 7:0 ]: 
-                                (dm_addr[1:0]==1'd1) ? dm_rdata[15:8 ]:
-                                (dm_addr[1:0]==1'd2) ? dm_rdata[23:16]:
-                                                       dm_rdata[31:24];   
+    always @(*) 
+    begin
+        if (ls_unaligned & direction & !inst_store)  // LWL
+        begin
+            case (dm_addr[1:0])
+                2'b00     : unaligned_result <= {dm_rdata[ 7:0],store_data[23:0]};
+                2'b01     : unaligned_result <= {dm_rdata[15:0],store_data[15:0]};
+                2'b10     : unaligned_result <= {dm_rdata[23:0],store_data[ 7:0]};
+                2'b11     : unaligned_result <= dm_rdata;
+                default   : unaligned_result <= dm_rdata;
+            endcase
+        end
+        else if (ls_unaligned & (!direction) & !inst_store) // LWR
+        begin
+            case (dm_addr[1:0])
+                2'b00     : unaligned_result <= dm_rdata;
+                2'b01     : unaligned_result <= {store_data[31:24],dm_rdata[31:8 ]};
+                2'b10     : unaligned_result <= {store_data[31:16],dm_rdata[31:16]};
+                2'b11     : unaligned_result <= {store_data[31:8 ],dm_rdata[31:24]};
+                default   : unaligned_result <= dm_rdata;
 
-    assign right_result[ 7:0 ] = (dm_addr[1:0]==1'd0) ? store_data[ 7:0 ]: 
-                                 (dm_addr[1:0]==1'd1) ? store_data[15:8 ]: 
-                                 (dm_addr[1:0]==1'd2) ? store_data[23:16]:
-                                                        store_data[31:24];
-    assign right_result[15:8 ] = (dm_addr[1:0]==1'd0) ? store_data[15:8 ]:
-                                 (dm_addr[1:0]==1'd1) ? store_data[23:16]:
-                                 (dm_addr[1:0]==1'd2) ? store_data[31:24]:
-                                                        dm_rdata[15:8 ];
-    assign right_result[23:16] = (dm_addr[1:0]==1'd0) ? store_data[23:16]: 
-                                 (dm_addr[1:0]==1'd1) ? store_data[31:24]:
-                                 (dm_addr[1:0]==1'd2) ? dm_rdata[23:16]:
-                                                        dm_rdata[23:16];
-    assign right_result[31:24] = (dm_addr[1:0]==1'd0) ? dm_rdata[31:24]: 
-                                 (dm_addr[1:0]==1'd1) ? store_data[ 7:0 ]: 
-                                 (dm_addr[1:0]==1'd2) ? store_data[ 7:0 ]: 
-                                                        store_data[ 7:0 ];
-    assign unaligned_result = ls_unaligned ? left_result : right_result; 
+            endcase
+        end
+    end
 
 //-----{load/store访存}end
 

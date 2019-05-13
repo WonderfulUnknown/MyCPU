@@ -72,3 +72,13 @@ lw错误,dm_rdata和result一样
     mycpu    : PC = 0xbfc0a448, wb_rf_wnum = 0x02, wb_rf_wdata = 0x000000e8  
 -------------------------------------------------------
 ```
+
+通过部分LWL
+
+```c
+--------------------------------------------------------------
+[3274635 ns] Error!!!
+    reference: PC = 0xbfc4040c, wb_rf_wnum = 0x02, wb_rf_wdata = 0xceeb8ea8
+    mycpu    : PC = 0xbfc4040c, wb_rf_wnum = 0x02, wb_rf_wdata = 0xceeb1d50
+--------------------------------------------------------------
+```
