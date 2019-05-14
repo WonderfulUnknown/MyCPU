@@ -187,9 +187,9 @@ module mem(                          // 访存级
             if (direction)
             begin
                 case (dm_addr[1:0])
-                    2'b00   : dm_wdata <= {24'd0,store_data[31:23]};
-                    2'b01   : dm_wdata <= {16'd0,store_data[31:15]};
-                    2'b10   : dm_wdata <= { 8'd0,store_data[31: 7]};
+                    2'b00   : dm_wdata <= {24'd0,store_data[31:24]};
+                    2'b01   : dm_wdata <= {16'd0,store_data[31:16]};
+                    2'b10   : dm_wdata <= { 8'd0,store_data[31: 8]};
                     2'b11   : dm_wdata <= {store_data};
                     default : dm_wdata <= store_data;
                 endcase
