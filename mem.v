@@ -8,13 +8,13 @@
 module mem(                          // 访存级
     input              clk,          // 时钟
     input              MEM_valid,    // 访存级有效信号
-    input      [158:0] EXE_MEM_bus_r,// EXE->MEM总线
+    input      [159:0] EXE_MEM_bus_r,// EXE->MEM总线
     input      [ 31:0] dm_rdata,     // 访存读数据
     output     [ 31:0] dm_addr,      // 访存读写地址
     output reg [  3:0] dm_wen,       // 访存写使能
     output reg [ 31:0] dm_wdata,     // 访存写数据
     output             MEM_over,     // MEM模块执行完成
-    output     [119:0] MEM_WB_bus,   // MEM->WB总线
+    output     [121:0] MEM_WB_bus,   // MEM->WB总线
     
     //5级流水新增接口
     input              MEM_allow_in, // MEM级允许下级进入
@@ -45,8 +45,19 @@ module mem(                          // 访存级
     wire       eret;
     wire       rf_wen;    //写回的寄存器写使能
     wire [4:0] rf_wdest;  //写回的目的寄存器
-    //new
-    wire overflow; //溢出信号
+   
+    //异常
+    wire fetch_error;
+    wire addr_error;
+    wire raddr_error;
+    wire waddr_error;
+    wire overflow;
+
+    assign addr_error = ((ls_word & dm_addr[1:0]!=2'd0) 
+                        | (ls_half_word & dm_addr[0]!=1'd0))
+                        ? 1'b1 : 1'b0;
+    assign raddr_error = (inst_load & addr_error);
+    assign waddr_error = (inst_store & addr_error);
 
     //pc
     wire [31:0] pc;    
@@ -65,7 +76,8 @@ module mem(                          // 访存级
             eret,
             rf_wen,
             rf_wdest,
-            //new
+            //异常
+            fetch_error,
             overflow,
             pc         } = EXE_MEM_bus_r;  
 //-----{EXE->MEM总线}end
@@ -298,7 +310,8 @@ module mem(                          // 访存级
                          hi_write,lo_write,                 // HI/LO写使能，新增
                          mfhi,mflo,                         // WB需要使用的信号,新增
                          mtc0,mfc0,cp0r_addr,syscall,eret,  // WB需要使用的信号,新增
-                         //new
+                         //异常
+                         fetch_error,raddr_error,waddr_error,
                          overflow,                          //WB需用的信号，异常
                          pc};                               // PC值
 //-----{MEM->WB总线}begin

@@ -7,9 +7,9 @@
 //*************************************************************************
 module exe(                         // 执行级
     input              EXE_valid,   // 执行级有效信号
-    input      [177:0] ID_EXE_bus_r,// ID->EXE总线
+    input      [178:0] ID_EXE_bus_r,// ID->EXE总线
     output             EXE_over,    // EXE模块执行完成
-    output     [158:0] EXE_MEM_bus, // EXE->MEM总线
+    output     [159:0] EXE_MEM_bus, // EXE->MEM总线
     
     //5级流水新增
     input              clk,         // 时钟
@@ -34,11 +34,14 @@ module exe(                         // 执行级
     wire [31:0] alu_operand1;
     wire [31:0] alu_operand2;
 
-    //new
-    wire checkoverflow;    //是否检测溢出
+    //异常
+    wire fetch_error;   
+    wire check_overflow; //是否检测溢出
     wire overflow; //特定指令需要检测结果是否溢出
     wire cout;     //加法器的进位
-
+    
+    assign overflow   = check_overflow ? cout : 0;
+    
     //旁路
     wire rs_wait;
     wire rt_wait;
@@ -70,7 +73,7 @@ module exe(                         // 执行级
             alu_control,
             alu_operand1,
             alu_operand2,
-            checkoverflow,
+            check_overflow,
             mem_control,
             store_data,
             mfhi,
@@ -85,6 +88,7 @@ module exe(                         // 执行级
             rs_wait,
             rt_wait,
             inst_R,
+            fetch_error,
             pc          } = ID_EXE_bus_r;
 //-----{ID->EXE总线}end
 
@@ -175,9 +179,6 @@ module exe(                         // 执行级
                         multiply ? product[31:0] : quotient;
     assign hi_write   = multiply | divide | mthi;
     assign lo_write   = multiply | divide | mtlo;
-    
-    //new
-    assign overflow   = checkoverflow ? cout : 0;
 
     assign EXE_MEM_bus = {mem_control,store_data,          //load/store信息和store数据
                           exe_result,                      //exe运算结果
@@ -186,8 +187,8 @@ module exe(                         // 执行级
                           mfhi,mflo,                       //WB需用的信号,新增
                           mtc0,mfc0,cp0r_addr,syscall,eret,//WB需用的信号,新增
                           rf_wen,rf_wdest,                 //WB需用的信号
-                          //new
-                          overflow,                        //WB需用的信号，异常
+                          //异常
+                          fetch_error,overflow,            //WB需用的信号，异常
                           pc};                             //PC
 //-----{EXE->MEM总线}end
 

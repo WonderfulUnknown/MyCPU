@@ -7,7 +7,7 @@
 //*************************************************************************
 module decode(                      // 译码级
     input              ID_valid,    // 译码级有效信号
-    input      [ 63:0] IF_ID_bus_r, // IF->ID总线
+    input      [ 64:0] IF_ID_bus_r, // IF->ID总线
     input      [ 31:0] rs_value,    // 第一源操作数值
     input      [ 31:0] rt_value,    // 第二源操作数值
     output     [  4:0] rs,          // 第一源操作数地址 
@@ -15,7 +15,7 @@ module decode(                      // 译码级
     output     [ 32:0] jbr_bus,     // 跳转总线
 //  output             inst_jbr,    // 指令为跳转分支指令,五级流水不需要
     output             ID_over,     // ID模块执行完成
-    output     [177:0] ID_EXE_bus,  // ID->EXE总线
+    output     [178:0] ID_EXE_bus,  // ID->EXE总线
     
     //5级流水新增
     input              IF_over,     //对于分支指令，需要该信号
@@ -35,7 +35,8 @@ module decode(                      // 译码级
 //-----{IF->ID总线}begin
     wire [31:0] pc;
     wire [31:0] inst;
-    assign {pc, inst} = IF_ID_bus_r;  // IF->ID总线传PC和指令
+    wire fetch_error;
+    assign {pc, inst, fetch_error} = IF_ID_bus_r;  // IF->ID总线传PC和指令
 //-----{IF->ID总线}end
 
 //-----{指令译码}begin
@@ -343,8 +344,7 @@ module decode(                      // 译码级
 
     //判断是否需要检测溢出
     wire check_overflow;   
-    assign check_overflow = inst_ADD | inst_ADDI
-                          | inst_SUB ;
+    assign check_overflow = inst_ADD | inst_ADDI | inst_SUB ;
 
     //乘除法是否有符号
     wire mult_sign;
@@ -428,7 +428,7 @@ module decode(                      // 译码级
                       inst_wdest_rd ? rd : 5'd0;
     assign store_data = rt_value;
     assign ID_EXE_bus = {multiply,divide,mthi,mtlo,            //EXE需用的信息,新增
-                         mult_sign,div_sign,
+                         mult_sign,div_sign,                   //EXE需用的信息,新增
                          alu_control,alu_operand1,alu_operand2,//EXE需用的信息
                          check_overflow,                       //EXE需用的信息，判断是否需要检测溢出       
                          mem_control,store_data,               //MEM需用的信号
@@ -437,6 +437,8 @@ module decode(                      // 译码级
                          rf_wen, rf_wdest,                     //WB需用的信号   
                          //旁路需要
                          rs_wait,rt_wait,inst_R,     
+                         //异常
+                         fecth_error,
                          pc};                                  //PC值
 //-----{ID->EXE总线}end
 

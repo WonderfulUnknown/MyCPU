@@ -141,10 +141,7 @@ module mycpu_top(
             WB_valid <= MEM_over;
         end
     end
-    
-    //cpu应该只需要给出使能，写使能信号和地址即可
-    //具体数据由soc_lite_top.v和inst_ram和data_ram交互得到
-    
+
     //inst_sram && data_sram信号 
     assign inst_sram_en = {IF_valid};
     //可能不需要的信号
@@ -159,16 +156,16 @@ module mycpu_top(
 //-------------------------{5级流水控制信号}end--------------------------//
 
 //--------------------------{5级间的总线}begin---------------------------//
-    wire [ 63:0] IF_ID_bus;   // IF->ID级总线
-    wire [177:0] ID_EXE_bus;  // ID->EXE级总线
-    wire [158:0] EXE_MEM_bus; // EXE->MEM级总线
-    wire [118:0] MEM_WB_bus;  // MEM->WB级总线
+    wire [ 64:0] IF_ID_bus;   // IF->ID级总线
+    wire [178:0] ID_EXE_bus;  // ID->EXE级总线
+    wire [159:0] EXE_MEM_bus; // EXE->MEM级总线
+    wire [121:0] MEM_WB_bus;  // MEM->WB级总线
     
     //锁存以上总线信号
-    reg [ 63:0] IF_ID_bus_r;
-    reg [177:0] ID_EXE_bus_r;
-    reg [158:0] EXE_MEM_bus_r;
-    reg [118:0] MEM_WB_bus_r;
+    reg [ 64:0] IF_ID_bus_r;
+    reg [178:0] ID_EXE_bus_r;
+    reg [159:0] EXE_MEM_bus_r;
+    reg [121:0] MEM_WB_bus_r;
     
     //IF到ID的锁存信号
     always @(posedge clk)
@@ -247,7 +244,7 @@ module mycpu_top(
     wire [31:0] rf_wdata;    
     
     //WB与IF间的交互信号
-    wire [33:0] exc_bus;
+    wire [32:0] exc_bus;
 //---------------------------{其他交互信号}end---------------------------//
 
 //--------------------------{旁路信号}begin--------------------------//

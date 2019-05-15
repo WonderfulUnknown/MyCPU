@@ -15,10 +15,10 @@ module fetch(                    // 取指级
     input      [32:0] jbr_bus,   // 跳转总线
     output     [31:0] inst_addr, // 发往inst_rom的取指地址
     output reg        IF_over,   // IF模块执行完成
-    output     [63:0] IF_ID_bus, // IF->ID总线
+    output     [64:0] IF_ID_bus, // IF->ID总线
     
     //5级流水新增接口
-    input      [33:0] exc_bus,   // Exception pc总线
+    input      [32:0] exc_bus,   // Exception pc总线
         
     //展示PC和取出的指令
     output     [31:0] IF_pc,
@@ -39,7 +39,7 @@ module fetch(                    // 取指级
     wire        exc_valid;
     wire [31:0] exc_pc;
     wire        overflow;
-    assign {exc_valid,exc_pc,overflow} = exc_bus;
+    assign {exc_valid,exc_pc} = exc_bus;
     
     //pc+4
     assign seq_pc[31:2]    = pc[31:2] + 1'b1;  // 下一指令地址：PC=PC+4
@@ -64,6 +64,10 @@ module fetch(                    // 取指级
 
 //-----{发往inst_rom的取指地址}begin
     assign inst_addr = pc;
+
+    //检测取指地址是否异常
+    wire fetch_error;
+    assign fetch_error = (inst_addr[1:0]==2'd0) ? 0 : 1; 
 //-----{发往inst_rom的取指地址}end
 
 //-----{IF执行完成}begin
@@ -89,7 +93,7 @@ module fetch(                    // 取指级
 //-----{IF执行完成}end
 
 //-----{IF->ID总线}begin
-    assign IF_ID_bus = {pc, inst};  // 取指级有效时，锁存PC和指令
+    assign IF_ID_bus = {pc, inst, fetch_error};  // 取指级有效时，锁存PC和指令
 //-----{IF->ID总线}end
 
 //-----{展示IF模块的PC值和指令}begin

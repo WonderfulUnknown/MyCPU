@@ -9,7 +9,7 @@
                                  // 此处实现的Exception只有SYSCALL
 module wb(                       // 写回级
     input          WB_valid,     // 写回级有效
-    input  [118:0] MEM_WB_bus_r, // MEM->WB总线
+    input  [121:0] MEM_WB_bus_r, // MEM->WB总线
     output [  3:0] rf_wen,       // 寄存器写使能
     output [  4:0] rf_wdest,     // 寄存器写地址
     output [ 31:0] rf_wdata,     // 寄存器写数据
@@ -18,7 +18,7 @@ module wb(                       // 写回级
     //5级流水新增接口
     input             clk,       // 时钟
     input             resetn,    // 复位信号，低电平有效
-    output [ 33:0] exc_bus,      // Exception pc总线
+    output [ 32:0] exc_bus,      // Exception pc总线
     output [  4:0] WB_wdest,     // WB级要写回寄存器堆的目标地址号
     output         cancel,       // syscall和eret到达写回级时会发出cancel信号，
                                  // 取消已经取出的正在其他流水级执行的指令
@@ -48,7 +48,11 @@ module wb(                       // 写回级
     wire [7 :0] cp0r_addr;
     wire       syscall;   //syscall和eret在写回级有特殊的操作 
     wire       eret;
-    //new 
+
+    //异常
+    wire fetch_error;
+    wire raddr_error;
+    wire waddr_error;
     wire overflow; 
     
     //pc
@@ -66,6 +70,9 @@ module wb(                       // 写回级
             cp0r_addr,
             syscall,
             eret,
+            fetch_error,
+            raddr_error,
+            waddr_error,
             overflow,
             pc} = MEM_WB_bus_r;
 //-----{MEM->WB总线}end
@@ -144,10 +151,21 @@ module wb(                       // 写回级
    assign cp0r_cause = {25'd0,cause_exc_code_r,2'd0};
    always @(posedge clk)
    begin
-       if (syscall)
+       if (raddr_error)
+       begin 
+           cause_exc_code_r <= 5'd4;
+       end
+       else if (waddr_error)
+       begin 
+           cause_exc_code_r <= 5'd5;
+       end
+       else if (syscall)
        begin
            cause_exc_code_r <= 5'd8;
        end
+       else if (overflow)
+       begin 
+           cause_exc_code_r <= 5'dc;
    end
    
    //EPC寄存器
@@ -196,7 +214,7 @@ module wb(                       // 写回级
     //但作为实验，先设置EXC_ENTER_ADDR为0，方便测试程序的编写
     assign exc_pc = syscall ? `EXC_ENTER_ADDR : cp0r_epc;
     
-    assign exc_bus = {exc_valid,exc_pc,overflow};
+    assign exc_bus = {exc_valid,exc_pc};
 //-----{Exception pc信号}end
 
 //-----{WB模块的dest值}begin
