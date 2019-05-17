@@ -157,15 +157,15 @@ module mycpu_top(
 
 //--------------------------{5级间的总线}begin---------------------------//
     wire [ 64:0] IF_ID_bus;   // IF->ID级总线
-    wire [178:0] ID_EXE_bus;  // ID->EXE级总线
-    wire [159:0] EXE_MEM_bus; // EXE->MEM级总线
-    wire [121:0] MEM_WB_bus;  // MEM->WB级总线
+    wire [179:0] ID_EXE_bus;  // ID->EXE级总线
+    wire [160:0] EXE_MEM_bus; // EXE->MEM级总线
+    wire [122:0] MEM_WB_bus;  // MEM->WB级总线
     
     //锁存以上总线信号
     reg [ 64:0] IF_ID_bus_r;
-    reg [178:0] ID_EXE_bus_r;
-    reg [159:0] EXE_MEM_bus_r;
-    reg [121:0] MEM_WB_bus_r;
+    reg [179:0] ID_EXE_bus_r;
+    reg [160:0] EXE_MEM_bus_r;
+    reg [122:0] MEM_WB_bus_r;
     
     //IF到ID的锁存信号
     always @(posedge clk)
@@ -268,9 +268,9 @@ module mycpu_top(
     wire [31:0] exe_result;
     wire [31:0] mem_result;
 
-    //!总线改变的时候记得修改位数 
-    assign exe_result = EXE_MEM_bus[132:101];// 168-36
-    assign mem_result = MEM_WB_bus[113:81];// 119-6
+    //总线改变的时候记得修改位数 
+    //assign exe_result = EXE_MEM_bus[132:101];// 168-36
+    //assign mem_result = MEM_WB_bus[113:81];// 119-6
     //应该在下一个周期才把数据给出
     assign to_alu     = forwardA ? exe_result : 
                         forwardB ? mem_result : 32'h0000;
@@ -343,7 +343,8 @@ module mycpu_top(
         .ID_EXE_bus_r(ID_EXE_bus_r),  // I, 167
         .EXE_over    (EXE_over    ),  // O, 1 
         .EXE_MEM_bus (EXE_MEM_bus ),  // O, 154
-        
+        .exe_result  (exe_result  ),
+
         //5级流水新增
         .clk         (clk         ),  // I, 1
         .EXE_wdest   (EXE_wdest   ),  // O, 5
@@ -372,7 +373,8 @@ module mycpu_top(
       
         .MEM_over     (MEM_over     ),  // O, 1
         .MEM_WB_bus   (MEM_WB_bus   ),  // O, 118
-        
+        .mem_result   (mem_result   ),
+
         //5级流水新增接口
         .MEM_allow_in (MEM_allow_in ),  // I, 1
         .MEM_wdest    (MEM_wdest    ),  // O, 5

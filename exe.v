@@ -7,10 +7,11 @@
 //*************************************************************************
 module exe(                         // 执行级
     input              EXE_valid,   // 执行级有效信号
-    input      [178:0] ID_EXE_bus_r,// ID->EXE总线
+    input      [179:0] ID_EXE_bus_r,// ID->EXE总线
     output             EXE_over,    // EXE模块执行完成
-    output     [159:0] EXE_MEM_bus, // EXE->MEM总线
-    
+    output     [160:0] EXE_MEM_bus, // EXE->MEM总线
+    output     [ 31:0] exe_result,  // EXE阶段的结果
+
     //5级流水新增
     input              clk,         // 时钟
     output     [  4:0] EXE_wdest,   // EXE级要写回寄存器堆的目标地址号
@@ -57,8 +58,9 @@ module exe(                         // 执行级
     wire mtc0;
     wire mfc0;
     wire [7 :0] cp0r_addr;
-    wire       syscall;   //syscall和eret在写回级有特殊的操作 
+    wire       syscall;   //syscall和eret,break在写回级有特殊的操作 
     wire       eret;
+    wire       break;
     wire       rf_wen;    //写回的寄存器写使能
     wire [4:0] rf_wdest;  //写回的目的寄存器
     
@@ -83,6 +85,7 @@ module exe(                         // 执行级
             cp0r_addr,
             syscall,
             eret,
+            break,
             rf_wen,
             rf_wdest,
             rs_wait,
@@ -165,7 +168,7 @@ module exe(                         // 执行级
 //-----{EXE模块的rf_wen值}end
 
 //-----{EXE->MEM总线}begin
-    wire [31:0] exe_result;   //在exe级能确定的最终写回结果
+    //wire [31:0] exe_result;   //在exe级能确定的最终写回结果
     wire [31:0] lo_result;
     wire        hi_write;
     wire        lo_write;

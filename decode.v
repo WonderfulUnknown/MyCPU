@@ -15,7 +15,7 @@ module decode(                      // 译码级
     output     [ 32:0] jbr_bus,     // 跳转总线
 //  output             inst_jbr,    // 指令为跳转分支指令,五级流水不需要
     output             ID_over,     // ID模块执行完成
-    output     [178:0] ID_EXE_bus,  // ID->EXE总线
+    output     [179:0] ID_EXE_bus,  // ID->EXE总线
     
     //5级流水新增
     input              IF_over,     //对于分支指令，需要该信号
@@ -89,6 +89,9 @@ module decode(                      // 译码级
     wire inst_LWL, inst_LWR;
     wire inst_SH;
     wire inst_SWL, inst_SWR;
+
+    //lab5-1
+    wire inst_BREAK;
 
     wire op_zero;  // 操作码全0
     wire sa_zero;  // sa域全0
@@ -176,6 +179,8 @@ module decode(                      // 译码级
     assign inst_SWL   = (op == 6'b101010); //寄存器左部存入非对齐地址
     assign inst_SWR   = (op == 6'b101110); //寄存器右部存入非对齐地址
 
+    //lab5-1
+    assign inst_BREAK = op_zero & (funct == 6'b001101);
     //跳转分支指令
     wire inst_jr;    //寄存器跳转指令
     wire inst_j_link;//链接跳转指令
@@ -253,7 +258,7 @@ module decode(                      // 译码级
     assign inst_no_rt = inst_ADDIU | inst_ADDI | inst_SLTI | inst_SLTIU
                       | inst_BGEZ  | inst_load | inst_imm_zero
                       | inst_J     | inst_JAL  | inst_MFC0
-                      | inst_SYSCALL
+                      | inst_SYSCALL | inst_BREAK
                       | inst_BGEZAL
                       | inst_BLTZAL;
 
@@ -410,13 +415,15 @@ module decode(                      // 译码级
     wire mflo;
     wire mtc0;
     wire mfc0;
-    wire [7 :0] cp0r_addr;//?涉及cp0寄存器
-    wire       syscall;   //syscall和eret在写回级有特殊的操作 
+    wire [7 :0] cp0r_addr;
+    wire       syscall;   //syscall和eret,break在写回级有特殊的操作 
     wire       eret;
+    wire       break;     
     wire       rf_wen;    //写回的寄存器写使能
     wire [4:0] rf_wdest;  //写回的目的寄存器
     assign syscall  = inst_SYSCALL;
     assign eret     = inst_ERET;
+    assign break    = inst_BREAK;
     assign mfhi     = inst_MFHI;
     assign mflo     = inst_MFLO;
     assign mtc0     = inst_MTC0;
@@ -433,7 +440,8 @@ module decode(                      // 译码级
                          check_overflow,                       //EXE需用的信息，判断是否需要检测溢出       
                          mem_control,store_data,               //MEM需用的信号
                          mfhi,mflo,                            //WB需用的信号,新增
-                         mtc0,mfc0,cp0r_addr,syscall,eret,     //WB需用的信号,新增
+                         mtc0,mfc0,cp0r_addr,                  //WB需用的信号,新增
+                         syscall,eret,break,                   //WB需用的信号,新增
                          rf_wen, rf_wdest,                     //WB需用的信号   
                          //旁路需要
                          rs_wait,rt_wait,inst_R,     

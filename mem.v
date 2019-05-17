@@ -8,14 +8,15 @@
 module mem(                          // 访存级
     input              clk,          // 时钟
     input              MEM_valid,    // 访存级有效信号
-    input      [159:0] EXE_MEM_bus_r,// EXE->MEM总线
+    input      [160:0] EXE_MEM_bus_r,// EXE->MEM总线
     input      [ 31:0] dm_rdata,     // 访存读数据
     output     [ 31:0] dm_addr,      // 访存读写地址
     output reg [  3:0] dm_wen,       // 访存写使能
     output reg [ 31:0] dm_wdata,     // 访存写数据
     output             MEM_over,     // MEM模块执行完成
-    output     [121:0] MEM_WB_bus,   // MEM->WB总线
-    
+    output     [122:0] MEM_WB_bus,   // MEM->WB总线
+    output     [31:0] mem_result;    //MEM传到WB的result为load结果或EXE结果
+
     //5级流水新增接口
     input              MEM_allow_in, // MEM级允许下级进入
     output     [  4:0] MEM_wdest,    // MEM级要写回寄存器堆的目标地址号
@@ -41,8 +42,9 @@ module mem(                          // 访存级
     wire mtc0;
     wire mfc0;
     wire [7 :0] cp0r_addr;
-    wire       syscall;   //syscall和eret在写回级有特殊的操作 
+    wire       syscall;   //syscall和eret,break在写回级有特殊的操作 
     wire       eret;
+    wire       break;
     wire       rf_wen;    //写回的寄存器写使能
     wire [4:0] rf_wdest;  //写回的目的寄存器
    
@@ -74,6 +76,7 @@ module mem(                          // 访存级
             cp0r_addr,
             syscall,
             eret,
+            break,
             rf_wen,
             rf_wdest,
             //异常
@@ -299,7 +302,7 @@ module mem(                          // 访存级
 //-----{MEM模块的rf_wen值}end
 
 //-----{MEM->WB总线}begin
-    wire [31:0] mem_result; //MEM传到WB的result为load结果或EXE结果
+    //wire [31:0] mem_result; //MEM传到WB的result为load结果或EXE结果
     //assign mem_result = inst_load ? load_result : exe_result;
     assign mem_result = ls_unaligned ? unaligned_result :
                         inst_load    ? load_result      : exe_result;   

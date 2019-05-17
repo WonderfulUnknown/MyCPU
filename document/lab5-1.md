@@ -2,6 +2,7 @@
 
 ## todo
 
+实现检测保留指令
 (1) CPU 增加 MTC0、MFC0、ERET 指令。
 (2) CPU 增加 CP0 寄存器 STATUS、CAUSE、EPC。
 (3) CPU 增加 SYSCALL 指令,也就是增加 syscall 例外支持。
@@ -22,6 +23,8 @@
 
 ## done
 
+单纯地给例外增加了信号,和给CAUSE寄存器赋值,具体的细节未实现
+
 ## problem
 
 ./convert
@@ -31,6 +34,8 @@ make[1]: *** [compile] Error 127
 make[1]: Leaving directory '/home/lin/loongson/lab/lab5/lab5-1/lab5_func_1'
 Makefile:13: recipe for target 'all' failed
 make: *** [all] Error 2
+**没有说明断点例外的优先级**
+**如何检测到中断**
 
 ## thinking
 

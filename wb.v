@@ -165,7 +165,8 @@ module wb(                       // 写回级
        end
        else if (overflow)
        begin 
-           cause_exc_code_r <= 5'dc;
+           cause_exc_code_r <= 5';
+       end
    end
    
    //EPC寄存器
