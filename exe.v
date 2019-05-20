@@ -7,9 +7,9 @@
 //*************************************************************************
 module exe(                         // 执行级
     input              EXE_valid,   // 执行级有效信号
-    input      [179:0] ID_EXE_bus_r,// ID->EXE总线
+    input      [180:0] ID_EXE_bus_r,// ID->EXE总线
     output             EXE_over,    // EXE模块执行完成
-    output     [160:0] EXE_MEM_bus, // EXE->MEM总线
+    output     [161:0] EXE_MEM_bus, // EXE->MEM总线
     output     [ 31:0] exe_result,  // EXE阶段的结果
 
     //5级流水新增
@@ -37,6 +37,7 @@ module exe(                         // 执行级
 
     //异常
     wire fetch_error;   
+    wire inst_reserved;
     wire check_overflow; //是否检测溢出
     wire overflow; //特定指令需要检测结果是否溢出
     wire cout;     //加法器的进位
@@ -92,6 +93,7 @@ module exe(                         // 执行级
             rt_wait,
             inst_R,
             fetch_error,
+            inst_reserved,
             pc          } = ID_EXE_bus_r;
 //-----{ID->EXE总线}end
 
@@ -188,10 +190,12 @@ module exe(                         // 执行级
                           lo_result,                       //乘法低32位结果，新增
                           hi_write,lo_write,               //HI/LO写使能，新增
                           mfhi,mflo,                       //WB需用的信号,新增
-                          mtc0,mfc0,cp0r_addr,syscall,eret,//WB需用的信号,新增
+                          mtc0,mfc0,cp0r_addr,
+                          syscall,eret,break,              //WB需用的信号,新增
                           rf_wen,rf_wdest,                 //WB需用的信号
                           //异常
-                          fetch_error,overflow,            //WB需用的信号，异常
+                          fetch_error,inst_reserved,       //WB需用的信号，异常
+                          overflow,                        //WB需用的信号，异常
                           pc};                             //PC
 //-----{EXE->MEM总线}end
 

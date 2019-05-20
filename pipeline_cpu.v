@@ -157,15 +157,15 @@ module mycpu_top(
 
 //--------------------------{5级间的总线}begin---------------------------//
     wire [ 64:0] IF_ID_bus;   // IF->ID级总线
-    wire [179:0] ID_EXE_bus;  // ID->EXE级总线
-    wire [160:0] EXE_MEM_bus; // EXE->MEM级总线
-    wire [122:0] MEM_WB_bus;  // MEM->WB级总线
+    wire [180:0] ID_EXE_bus;  // ID->EXE级总线
+    wire [161:0] EXE_MEM_bus; // EXE->MEM级总线
+    wire [123:0] MEM_WB_bus;  // MEM->WB级总线
     
     //锁存以上总线信号
     reg [ 64:0] IF_ID_bus_r;
-    reg [179:0] ID_EXE_bus_r;
-    reg [160:0] EXE_MEM_bus_r;
-    reg [122:0] MEM_WB_bus_r;
+    reg [180:0] ID_EXE_bus_r;
+    reg [161:0] EXE_MEM_bus_r;
+    reg [123:0] MEM_WB_bus_r;
     
     //IF到ID的锁存信号
     always @(posedge clk)

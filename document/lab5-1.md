@@ -2,17 +2,16 @@
 
 ## todo
 
-实现检测保留指令
+**实现检测保留指令以及如何检测中断**
 (1) CPU 增加 MTC0、MFC0、ERET 指令。
 (2) CPU 增加 CP0 寄存器 STATUS、CAUSE、EPC。
 (3) CPU 增加 SYSCALL 指令,也就是增加 syscall 例外支持。
-(4) 运行功能测试通过。功能测试程序为 lab5_func_1,是在 lab3_func_4 的基础上增加第 69 个功能点测试,
-也就是 SYSCALL 例外测试
+(4) 运行功能测试通过。功能测试程序为 lab5_func_1,是在 lab3_func_4 的基础上增加第 69 个功能点测试,也就是 SYSCALL 例外测试
 
 (1) CPU 增加 BREAK 指令,也就是增加 break 例外支持,。
 (2) CPU 增加地址错、整数溢出、保留指令例外支持。
 (3) CPU 增加 CP0 寄存器 COUNT、COMPARE。
-(4) CPU 增加时钟中断支持,时钟中断要求固定绑定在硬件中断 5 号上,也就是 CAUSE 对应的 IP7 上。
+(4) CPU 增加时钟中断支持,时钟中断要求固定绑定在硬件中断 5 号上,也就是CAUSE 对应的 IP7 上。
 (5) CPU 增加 6 个硬件中断支持,编号为 0~5,对应 CAUSE 的 IP7~IP2。
 (6) CPU 增加 2 个软件中断支持,对应 CAUSE 的 IP1~IP0。
 (7) 完成 lab5_fun_2 功能测试。
@@ -34,6 +33,9 @@ make[1]: *** [compile] Error 127
 make[1]: Leaving directory '/home/lin/loongson/lab/lab5/lab5-1/lab5_func_1'
 Makefile:13: recipe for target 'all' failed
 make: *** [all] Error 2
+解决方法:把convert.exe文件属性中允许作为程序执行文件勾上
+===============
+
 **没有说明断点例外的优先级**
 **如何检测到中断**
 
@@ -45,6 +47,7 @@ make: *** [all] Error 2
 - 需要重新检查哪些指令需要检查异常,然后传递信号给WB阶段
 - **注意中断的优先级,体现在CAUSE寄存器赋值的时候先判断优先级高的中断**
 - **出错的时候考虑检测是否是bus位数不对**
+- **取指错误(地址错误,保留指令)可能需要立马中断,也可能不需要**
 
 ## tips
 
@@ -60,3 +63,13 @@ make: *** [all] Error 2
 - 当地址错误例外的时候需要用BadVAddr寄存器记录触发例外的虚地址(未实现)
 
 ## debug
+
+实现所有异常检测以后
+
+```c
+--------------------------------------------------------------
+[3351665 ns] Error!!!
+    reference: PC = 0xbfc003b8, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x00400002
+    mycpu    : PC = 0xbfc003b8, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x00000002
+--------------------------------------------------------------
+```

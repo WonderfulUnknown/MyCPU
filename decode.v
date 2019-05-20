@@ -15,7 +15,7 @@ module decode(                      // 译码级
     output     [ 32:0] jbr_bus,     // 跳转总线
 //  output             inst_jbr,    // 指令为跳转分支指令,五级流水不需要
     output             ID_over,     // ID模块执行完成
-    output     [179:0] ID_EXE_bus,  // ID->EXE总线
+    output     [180:0] ID_EXE_bus,  // ID->EXE总线
     
     //5级流水新增
     input              IF_over,     //对于分支指令，需要该信号
@@ -92,6 +92,7 @@ module decode(                      // 译码级
 
     //lab5-1
     wire inst_BREAK;
+    wire inst_reserved;//保留指令
 
     wire op_zero;  // 操作码全0
     wire sa_zero;  // sa域全0
@@ -181,6 +182,18 @@ module decode(                      // 译码级
 
     //lab5-1
     assign inst_BREAK = op_zero & (funct == 6'b001101);
+    assign inst_reserved = !(inst_jbr
+                           | inst_add  | inst_sub  | inst_slt 
+                           | inst_sltu | inst_and  | inst_nor 
+                           | inst_or   | inst_xor  | inst_sll
+                           | inst_srl  | inst_sra  | inst_lui
+                           | inst_MULT | inst_MULTU
+                           | inst_DIV  | inst_DIVU
+                           | inst_MFLO | inst_MFHI
+                           | inst_MTLO | inst_MTHI 
+                           | inst_MFC0 | inst_MTC0  
+                           | inst_BREAK| inst_ERET | inst_SYSCALL);
+
     //跳转分支指令
     wire inst_jr;    //寄存器跳转指令
     wire inst_j_link;//链接跳转指令
@@ -446,7 +459,8 @@ module decode(                      // 译码级
                          //旁路需要
                          rs_wait,rt_wait,inst_R,     
                          //异常
-                         fecth_error,
+                         fetch_error,
+                         inst_reserved,
                          pc};                                  //PC值
 //-----{ID->EXE总线}end
 

@@ -8,14 +8,14 @@
 module mem(                          // 访存级
     input              clk,          // 时钟
     input              MEM_valid,    // 访存级有效信号
-    input      [160:0] EXE_MEM_bus_r,// EXE->MEM总线
+    input      [161:0] EXE_MEM_bus_r,// EXE->MEM总线
     input      [ 31:0] dm_rdata,     // 访存读数据
     output     [ 31:0] dm_addr,      // 访存读写地址
     output reg [  3:0] dm_wen,       // 访存写使能
     output reg [ 31:0] dm_wdata,     // 访存写数据
     output             MEM_over,     // MEM模块执行完成
-    output     [122:0] MEM_WB_bus,   // MEM->WB总线
-    output     [31:0] mem_result;    //MEM传到WB的result为load结果或EXE结果
+    output     [123:0] MEM_WB_bus,   // MEM->WB总线
+    output     [ 31:0] mem_result,    //MEM传到WB的result为load结果或EXE结果
 
     //5级流水新增接口
     input              MEM_allow_in, // MEM级允许下级进入
@@ -50,6 +50,7 @@ module mem(                          // 访存级
    
     //异常
     wire fetch_error;
+    wire inst_reserved;
     wire addr_error;
     wire raddr_error;
     wire waddr_error;
@@ -81,6 +82,7 @@ module mem(                          // 访存级
             rf_wdest,
             //异常
             fetch_error,
+            inst_reserved,
             overflow,
             pc         } = EXE_MEM_bus_r;  
 //-----{EXE->MEM总线}end
@@ -312,9 +314,11 @@ module mem(                          // 访存级
                          lo_result,                         // 乘法低32位结果，新增
                          hi_write,lo_write,                 // HI/LO写使能，新增
                          mfhi,mflo,                         // WB需要使用的信号,新增
-                         mtc0,mfc0,cp0r_addr,syscall,eret,  // WB需要使用的信号,新增
+                         mtc0,mfc0,cp0r_addr,
+                         syscall,eret,break,                // WB需要使用的信号,新增
                          //异常
-                         fetch_error,raddr_error,waddr_error,
+                         fetch_error,inst_reserved,
+                         raddr_error,waddr_error,
                          overflow,                          //WB需用的信号，异常
                          pc};                               // PC值
 //-----{MEM->WB总线}begin

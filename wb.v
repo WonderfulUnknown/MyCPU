@@ -5,11 +5,11 @@
 //   > 作者  : LOONGSON
 //   > 日期  : 2016-04-14
 //*************************************************************************
-`define EXC_ENTER_ADDR 32'd0     // Excption入口地址，
-                                 // 此处实现的Exception只有SYSCALL
+`define EXC_ENTER_ADDR 32'hBFC00380     // Excption入口地址，
+
 module wb(                       // 写回级
     input          WB_valid,     // 写回级有效
-    input  [121:0] MEM_WB_bus_r, // MEM->WB总线
+    input  [123:0] MEM_WB_bus_r, // MEM->WB总线
     output [  3:0] rf_wen,       // 寄存器写使能
     output [  4:0] rf_wdest,     // 寄存器写地址
     output [ 31:0] rf_wdata,     // 寄存器写数据
@@ -51,6 +51,7 @@ module wb(                       // 写回级
 
     //异常
     wire fetch_error;
+    wire inst_reserved;
     wire raddr_error;
     wire waddr_error;
     wire overflow; 
@@ -70,7 +71,9 @@ module wb(                       // 写回级
             cp0r_addr,
             syscall,
             eret,
+            break,
             fetch_error,
+            inst_reserved,
             raddr_error,
             waddr_error,
             overflow,
@@ -151,13 +154,13 @@ module wb(                       // 写回级
    assign cp0r_cause = {25'd0,cause_exc_code_r,2'd0};
    always @(posedge clk)
    begin
-       if (raddr_error)
+       if (fetch_error)
        begin 
            cause_exc_code_r <= 5'd4;
        end
-       else if (waddr_error)
-       begin 
-           cause_exc_code_r <= 5'd5;
+       else if (inst_reserved)
+       begin
+           cause_exc_code_r <= 5'ha;
        end
        else if (syscall)
        begin
@@ -165,7 +168,19 @@ module wb(                       // 写回级
        end
        else if (overflow)
        begin 
-           cause_exc_code_r <= 5';
+           cause_exc_code_r <= 5'hc;
+       end
+       else if (raddr_error)
+       begin 
+           cause_exc_code_r <= 5'd4;
+       end
+       else if (waddr_error)
+       begin 
+           cause_exc_code_r <= 5'd5;
+       end
+       else if (break)
+       begin
+           cause_exc_code_r <= 5'd9;
        end
    end
    
