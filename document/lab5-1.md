@@ -26,7 +26,7 @@
 
 ## problem
 
-./convert
+>./convert
 make[1]: execvp: ./convert: 权限不够
 Makefile:16: recipe for target 'compile' failed
 make[1]: *** [compile] Error 127

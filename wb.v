@@ -109,100 +109,125 @@ module wb(                       // 写回级
 // 由于目前设计的CPU并不完备，所用到的cp0寄存器也很少
 // 故暂时只实现STATUS(12.0),CAUSE(13.0),EPC(14.0)这三个
 // 每个CP0寄存器都是使用5位的cp0号
-   wire [31:0] cp0r_status;
-   wire [31:0] cp0r_cause;
-   wire [31:0] cp0r_epc;
+    wire [31:0] cp0r_status;
+    wire [31:0] cp0r_cause;
+    wire [31:0] cp0r_epc;
    
-   //写使能
-   wire status_wen;
-   //wire cause_wen;
-   wire epc_wen;
-   assign status_wen = mtc0 & (cp0r_addr=={5'd12,3'd0});
-   assign epc_wen    = mtc0 & (cp0r_addr=={5'd14,3'd0});
+    //写使能
+    wire status_wen;
+    //wire cause_wen;
+    wire epc_wen;
+    assign status_wen = mtc0 & (cp0r_addr=={5'd12,3'd0});//0x60
+    assign epc_wen    = mtc0 & (cp0r_addr=={5'd14,3'd0});
    
-   //cp0寄存器读
-   wire [31:0] cp0r_rdata;
-   assign cp0r_rdata = (cp0r_addr=={5'd12,3'd0}) ? cp0r_status :
+    //cp0寄存器读
+    wire [31:0] cp0r_rdata;
+    assign cp0r_rdata = (cp0r_addr=={5'd12,3'd0}) ? cp0r_status :
                        (cp0r_addr=={5'd13,3'd0}) ? cp0r_cause  :
                        (cp0r_addr=={5'd14,3'd0}) ? cp0r_epc : 32'd0;
    
-   //STATUS寄存器
-   //目前只实现STATUS[1]位，即EXL域
-   //EXL域为软件可读写，故需要statu_wen
-   reg status_exl_r;
-   assign cp0r_status = {30'd0,status_exl_r,1'b0};
-   always @(posedge clk)
-   begin
-       if (!resetn || eret)
-       begin
-           status_exl_r <= 1'b0;
-       end
-       else if (syscall)
-       begin
-           status_exl_r <= 1'b1;
-       end
-       else if (status_wen)
-       begin
-           status_exl_r <= mem_result[1];
-       end
-   end
+    //STATUS寄存器
+    //目前只实现STATUS[1]位，即EXL域
+    //EXL域为软件可读写，故需要statu_wen
+    reg [31:0]status_r;
+    assign cp0r_status = status_r;
+    always @(posedge clk)
+    begin
+        if (!resetn)
+        begin      
+            status_r[31:23] <= 9'd0;
+		    status_r[22]    <= 1'b1;
+            status_r[21:0 ] <= 22'b0;
+		    //status_r[21:16] <= 6'd0;
+		    //status_r[ 7:0 ] <= 8'd0;
+        end
+        else if (eret)
+        begin
+            status_r[1] <= 1'b0;
+        end
+        else if (syscall)
+        begin 
+            status_r[1] <= 1'b1;
+        end 
+        else if (status_wen)
+        begin 
+            status_r[1] <= mem_result[1];
+        end
+    end
+//    reg status_exl_r;
+//    assign cp0r_status = {30'd0,status_exl_r,1'b0};
+//    always @(posedge clk)
+//    begin
+//        if (!resetn || eret)
+//        begin
+//            status_exl_r <= 1'b0;
+//        end
+//        else if (syscall)
+//        begin
+//            status_exl_r <= 1'b1;
+//        end
+//        else if (status_wen)
+//        begin
+//            status_exl_r <= mem_result[1];
+//        end
+//    end
    
    //CAUSE寄存器
    //目前只实现CAUSE[6:2]位，即ExcCode域,存放Exception编码
    //ExcCode域为软件只读，不可写，故不需要cause_wen
-   reg [4:0] cause_exc_code_r;
-   assign cp0r_cause = {25'd0,cause_exc_code_r,2'd0};
-   always @(posedge clk)
-   begin
-       if (fetch_error)
-       begin 
-           cause_exc_code_r <= 5'd4;
-       end
-       else if (inst_reserved)
-       begin
-           cause_exc_code_r <= 5'ha;
-       end
-       else if (syscall)
-       begin
-           cause_exc_code_r <= 5'd8;
-       end
-       else if (overflow)
-       begin 
-           cause_exc_code_r <= 5'hc;
-       end
-       else if (raddr_error)
-       begin 
-           cause_exc_code_r <= 5'd4;
-       end
-       else if (waddr_error)
-       begin 
-           cause_exc_code_r <= 5'd5;
-       end
-       else if (break)
-       begin
-           cause_exc_code_r <= 5'd9;
-       end
-   end
+    reg [4:0] cause_exc_code_r;
+    assign cp0r_cause = {25'd0,cause_exc_code_r,2'd0};
+    always @(posedge clk)
+    begin
+        if (fetch_error)
+        begin 
+            cause_exc_code_r <= 5'd4;
+        end
+        else if (inst_reserved)
+        begin
+            cause_exc_code_r <= 5'ha;
+        end
+        else if (syscall)
+        begin
+            cause_exc_code_r <= 5'd8;
+        end
+        else if (overflow)
+        begin 
+            cause_exc_code_r <= 5'hc;
+        end
+        else if (raddr_error)
+        begin 
+            cause_exc_code_r <= 5'd4;
+        end
+        else if (waddr_error)
+        begin 
+            cause_exc_code_r <= 5'd5;
+        end
+        else if (break)
+        begin
+            cause_exc_code_r <= 5'd9;
+        end
+    end
    
-   //EPC寄存器
-   //存放产生例外的地址
-   //EPC整个域为软件可读写的，故需要epc_wen
-   reg [31:0] epc_r;
-   assign cp0r_epc = epc_r;
-   always @(posedge clk)
-   begin
-       if (syscall)
-       begin
-           epc_r <= pc;
-       end
-       else if (epc_wen)
-       begin
-           epc_r <= mem_result;
-       end
-   end
+    //EPC寄存器
+    //存放产生例外的地址
+    //EPC整个域为软件可读写的，故需要epc_wen
+    reg [31:0] epc_r;
+    assign cp0r_epc = epc_r;
+    always @(posedge clk)
+    begin
+        if (syscall)
+        begin
+            epc_r <= pc;
+        end
+        else if (epc_wen)
+        begin
+            epc_r <= mem_result;
+        end
+    end
    
-   //syscall和eret发出的cancel信号
-   assign cancel = (syscall | eret) & WB_over;
+    //syscall和eret发出的cancel信号
+    assign cancel = (syscall | eret) & WB_over;
 //-----{cp0寄存器}begin
 
 //-----{WB执行完成}begin
