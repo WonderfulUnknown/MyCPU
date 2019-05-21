@@ -50,12 +50,16 @@ module wb(                       // 写回级
     wire       eret;
 
     //异常
+    wire break;
     wire fetch_error;
     wire inst_reserved;
     wire raddr_error;
     wire waddr_error;
     wire overflow; 
-    
+    wire exc_happened;
+
+    assign exc_happened = fetch_error | inst_reserved | raddr_error 
+                        | waddr_error | overflow | syscall | break;
     //pc
     wire [31:0] pc;    
     assign {wen,
@@ -248,12 +252,10 @@ module wb(                       // 写回级
 //-----{Exception pc信号}begin
     wire        exc_valid;
     wire [31:0] exc_pc;
-    //assign exc_valid = (syscall | eret | overflow) & WB_valid;
-    assign exc_valid =(syscall | eret) & WB_valid;
+    assign exc_valid =(exc_happened | eret) & WB_valid;
     //eret返回地址为EPC寄存器的值
     //SYSCALL的excPC应该为{EBASE[31:10],10'h180},
-    //但作为实验，先设置EXC_ENTER_ADDR为0，方便测试程序的编写
-    assign exc_pc = syscall ? `EXC_ENTER_ADDR : cp0r_epc;
+    assign exc_pc = exc_happened ? `EXC_ENTER_ADDR : cp0r_epc;
     
     assign exc_bus = {exc_valid,exc_pc};
 //-----{Exception pc信号}end
