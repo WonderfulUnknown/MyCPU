@@ -394,6 +394,7 @@ module decode(                      // 译码级
                           inst_srl,
                           inst_sra,
                           inst_lui};
+                          
     //访存需要用到的load/store信息
     //load字节和半字时候需要考虑是否是有符号load
     wire l_sign;  //有符号load

@@ -40,9 +40,10 @@ module exe(                         // 执行级
     wire inst_reserved;
     wire check_overflow; //是否检测溢出
     wire overflow; //特定指令需要检测结果是否溢出
-    wire cout;     //加法器的进位
+    wire adder_cout;     //加法器的进位
     
-    assign overflow   = check_overflow ? cout : 0;
+    assign overflow   = !check_overflow ? 0 :
+                        (adder_cout!=alu_result[31]) ? 1 : 0;
     
     //旁路
     wire rs_wait;
@@ -101,19 +102,19 @@ module exe(                         // 执行级
     wire [31:0] alu_result;
     wire [31:0] alu_src1;
     wire [31:0] alu_src2;
-    //旁路 可能有错
-    //assign alu_operand1 = (inst_R & rs_wait) ? to_alu : alu_operand1;
-    //assign alu_operand2 = (inst_R & rt_wait) ? to_alu : alu_operand2;
+
+    //旁路
     assign alu_src1 = (inst_R & rs_wait) ? to_alu : alu_operand1;
     assign alu_src2 = (inst_R & rt_wait) ? to_alu : alu_operand2;
     alu alu_module(
-        .alu_control  (alu_control ),  // I, 12, ALU控制信号
-        //.alu_src1     (alu_operand1),  // I, 32, ALU操作数1
-        //.alu_src2     (alu_operand2),  // I, 32, ALU操作数2
+        .alu_control  (alu_control),  // I, 12, ALU控制信号
         .alu_src1     (alu_src1),
         .alu_src2     (alu_src2),
-        .alu_result   (alu_result  ),  // O, 32, ALU结果
-        .cout         (cout)           // O,  1, 是否溢出
+        .alu_result   (alu_result),  // O, 32, ALU结果
+        .adder_cout   (adder_cout)
+        // .adder_cout   (adder_cout),
+        // .overflow     (overflow),
+        // .check_overflow (check_overflow)
     );
 //-----{ALU}end
 

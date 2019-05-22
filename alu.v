@@ -11,7 +11,11 @@ module alu(
     input  [31:0] alu_src2,     // ALU操作数2，为补码
     output [31:0] alu_result,   // ALU结果
     //new
-    output        cout      // 结果是否溢出
+    output        adder_cout
+    // output        adder_cout,    // 用于判断结果是否溢出
+    // //旁路
+    // input         overflow,
+    // input         check_overflow
     );
 
     // ALU控制信号，独热码
@@ -41,7 +45,7 @@ module alu(
     assign alu_sra  = alu_control[ 1];
     assign alu_lui  = alu_control[ 0];
 
-    wire [31:0] add_sub_result;
+    // wire [31:0] add_sub_result;
     wire [31:0] slt_result;
     wire [31:0] sltu_result;
     wire [31:0] and_result;
@@ -65,20 +69,26 @@ module alu(
     wire [31:0] adder_operand2;
     wire        adder_cin     ;
     wire [31:0] adder_result  ;
-    wire        adder_cout    ;
+    
     assign adder_operand1 = alu_src1; 
     assign adder_operand2 = alu_add ? alu_src2 : ~alu_src2; 
     assign adder_cin      = ~alu_add; //减法需要cin,补码
-    adder adder_module(
-    .operand1(adder_operand1),
-    .operand2(adder_operand2),
-    .cin     (adder_cin     ),
-    .result  (adder_result  ),
-    .cout    (adder_cout    )
-    );
 
-    //加减结果
-    assign add_sub_result = adder_result;
+    // adder adder_module(
+    // .operand1(adder_operand1),
+    // .operand2(adder_operand2),
+    // .cin     (adder_cin     ),
+    // .result  (adder_result  ),
+    // .cout    (adder_cout    )
+    // );
+
+    wire [32:0] op1;
+    wire [32:0] op2;
+    assign op1 = {adder_operand1[31],adder_operand1};
+    assign op2 = {adder_operand1[31],adder_operand2};
+    assign {adder_cout,adder_result} = op1 + op2 + adder_cin;
+    // assign overflow   = !check_overflow ? 0 :
+    //                     (adder_cout!=alu_result[31]) ? 1 : 0;
 
     //slt结果
     //adder_src1[31] adder_src2[31] adder_result[31]
@@ -154,7 +164,7 @@ module alu(
 //-----{移位器}end
 
     // 选择相应结果输出
-    assign alu_result = (alu_add|alu_sub) ? add_sub_result[31:0] : 
+    assign alu_result = (alu_add|alu_sub) ? adder_result : 
                         alu_slt           ? slt_result :
                         alu_sltu          ? sltu_result :
                         alu_and           ? and_result :
@@ -166,5 +176,4 @@ module alu(
                         alu_sra           ? sra_result :
                         alu_lui           ? lui_result :
                         32'd0;
-    assign cout = adder_cout;
 endmodule
