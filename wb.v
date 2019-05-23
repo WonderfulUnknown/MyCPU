@@ -45,7 +45,7 @@ module wb(                       // 写回级
     wire mflo;
     wire mtc0;
     wire mfc0;
-    wire [7 :0] cp0r_addr;
+    wire [7:0] cp0r_addr;
     wire       syscall;   //syscall和eret在写回级有特殊的操作 
     wire       eret;
 
@@ -116,7 +116,8 @@ module wb(                       // 写回级
     wire [31:0] cp0r_status;
     wire [31:0] cp0r_cause;
     wire [31:0] cp0r_epc;
-   
+    wire [31:0] cp0r_badvaddr;
+
     //写使能
     wire status_wen;
     //wire cause_wen;
@@ -126,9 +127,10 @@ module wb(                       // 写回级
    
     //cp0寄存器读
     wire [31:0] cp0r_rdata;
-    assign cp0r_rdata = (cp0r_addr=={5'd12,3'd0}) ? cp0r_status :
-                       (cp0r_addr=={5'd13,3'd0}) ? cp0r_cause  :
-                       (cp0r_addr=={5'd14,3'd0}) ? cp0r_epc : 32'd0;
+    assign cp0r_rdata = (cp0r_addr=={5'd8 ,3'd0}) ? cp0r_badvaddr :
+                        (cp0r_addr=={5'd12,3'd0}) ? cp0r_status :
+                        (cp0r_addr=={5'd13,3'd0}) ? cp0r_cause  :
+                        (cp0r_addr=={5'd14,3'd0}) ? cp0r_epc    : 32'd0;
    
     //STATUS寄存器
     //目前只实现STATUS[1]位，即EXL域
@@ -142,14 +144,12 @@ module wb(                       // 写回级
             status_r[31:23] <= 9'd0;
 		    status_r[22]    <= 1'b1;
             status_r[21:0 ] <= 22'b0;
-		    //status_r[21:16] <= 6'd0;
-		    //status_r[ 7:0 ] <= 8'd0;
         end
         else if (eret)
         begin
             status_r[1] <= 1'b0;
         end
-        else if (syscall)
+        else if (exc_happened)
         begin 
             status_r[1] <= 1'b1;
         end 
@@ -220,7 +220,7 @@ module wb(                       // 写回级
     assign cp0r_epc = epc_r;
     always @(posedge clk)
     begin
-        if (syscall)
+        if (exc_happened)
         begin
             epc_r <= pc;
         end
@@ -229,9 +229,19 @@ module wb(                       // 写回级
             epc_r <= mem_result;
         end
     end
-   
-    //syscall和eret发出的cancel信号
-    assign cancel = (syscall | eret) & WB_over;
+
+    //BadVAddr寄存器
+    reg [31:0] badvaddr_r;
+    assign cp0r_badvaddr = badvaddr_r;
+    always @(posedge clk)
+    begin
+        if (fetch_error | raddr_error | waddr_error)
+        begin 
+            badvaddr_r <= pc;
+        end
+    end
+    //所有异常和eret发出的cancel信号
+    assign cancel = (exc_happened | eret) & WB_over;
 //-----{cp0寄存器}begin
 
 //-----{WB执行完成}begin
@@ -241,8 +251,7 @@ module wb(                       // 写回级
 //-----{WB执行完成}end
 
 //-----{WB->regfile信号}begin
-    assign rf_wen   = {4{wen & WB_over}};
-    // assign rf_wen   = wen & {4{WB_over}};
+    assign rf_wen   = exc_happened ? 4'b0 : {4{wen & WB_over}};
     assign rf_wdest = wdest;
     assign rf_wdata = mfhi ? hi :
                       mflo ? lo :

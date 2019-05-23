@@ -11,8 +11,8 @@ module alu(
     input  [31:0] alu_src2,     // ALU操作数2，为补码
     output [31:0] alu_result,   // ALU结果
     //new
-    output        adder_cout
-    // output        adder_cout,    // 用于判断结果是否溢出
+    //output        adder_cout
+    output [ 1:0] adder_cout    // 用于判断结果是否溢出
     // //旁路
     // input         overflow,
     // input         check_overflow
@@ -85,7 +85,7 @@ module alu(
     wire [32:0] op1;
     wire [32:0] op2;
     assign op1 = {adder_operand1[31],adder_operand1};
-    assign op2 = {adder_operand1[31],adder_operand2};
+    assign op2 = {adder_operand2[31],adder_operand2};
     assign {adder_cout,adder_result} = op1 + op2 + adder_cin;
     // assign overflow   = !check_overflow ? 0 :
     //                     (adder_cout!=alu_result[31]) ? 1 : 0;
@@ -108,7 +108,7 @@ module alu(
     //32位加法的结果为{adder_cout,adder_result},则33位加法结果应该为{adder_cout+1'b1,adder_result}
     //对比slt结果注释，知道，此时判断大小属于第二三种情况，即源操作数1符号位为0，源操作数2符号位为0
     //结果的符号位为1，说明小于，即adder_cout+1'b1为2'b01，即adder_cout为0
-    assign sltu_result = {31'd0, ~adder_cout};
+    assign sltu_result = {31'd0, ~adder_cout[1]};
 //-----{加法器}end
 
 //-----{移位器}begin

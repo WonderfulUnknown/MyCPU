@@ -40,10 +40,10 @@ module exe(                         // 执行级
     wire inst_reserved;
     wire check_overflow; //是否检测溢出
     wire overflow; //特定指令需要检测结果是否溢出
-    wire adder_cout;     //加法器的进位
+    wire [1:0] adder_cout;     //加法器的进位
     
     assign overflow   = !check_overflow ? 0 :
-                        (adder_cout!=alu_result[31]) ? 1 : 0;
+                        (adder_cout[0]!=alu_result[31]) ? 1 : 0;
     
     //旁路
     wire rs_wait;
@@ -59,7 +59,7 @@ module exe(                         // 执行级
     wire mflo;
     wire mtc0;
     wire mfc0;
-    wire [7 :0] cp0r_addr;
+    wire [7:0] cp0r_addr;
     wire       syscall;   //syscall和eret,break在写回级有特殊的操作 
     wire       eret;
     wire       break;

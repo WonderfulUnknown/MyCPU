@@ -429,7 +429,7 @@ module decode(                      // 译码级
     wire mflo;
     wire mtc0;
     wire mfc0;
-    wire [7 :0] cp0r_addr;
+    wire [7:0] cp0r_addr;
     wire       syscall;   //syscall和eret,break在写回级有特殊的操作 
     wire       eret;
     wire       break;     

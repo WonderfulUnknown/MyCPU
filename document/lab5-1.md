@@ -105,3 +105,35 @@ make: *** [all] Error 2
     mycpu    : PC = 0xbfc00380, wb_rf_wnum = 0x1a, wb_rf_wdata = 0xxxxxxxxx
 --------------------------------------------------------------
 ```
+
+解决overflow判断
+
+```c
+--------------------------------------------------------------
+[3361005 ns] Error!!!
+    reference: PC = 0xbfc00438, wb_rf_wnum = 0x1a, wb_rf_wdata = 0xbfc859ac
+    mycpu    : PC = 0xbfc00438, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x80000000
+--------------------------------------------------------------
+```
+
+syscall->exc_happend
+
+```c
+--------------------------------------------------------------
+[3370665 ns] Error!!!
+    reference: PC = 0xbfc00380, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x00010000
+    mycpu    : PC = 0xbfc32c8c, wb_rf_wnum = 0x02, wb_rf_wdata = 0x64c76d7c
+--------------------------------------------------------------
+```
+
+使发生异常的指令不写回后(73 pass) n74_lw_adel_ex_test
+
+```c
+--------------------------------------------------------------
+[3407175 ns] Error!!!
+    reference: PC = 0xbfc6a5c0, wb_rf_wnum = 0x16, wb_rf_wdata = 0x8001fde1
+    mycpu    : PC = 0xbfc6a5c0, wb_rf_wnum = 0x16, wb_rf_wdata = 0x00000000
+--------------------------------------------------------------
+```
+
+0x8001fde1?不知道如何得到这个值,不是pc
