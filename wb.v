@@ -9,7 +9,7 @@
 
 module wb(                       // 写回级
     input          WB_valid,     // 写回级有效
-    input  [123:0] MEM_WB_bus_r, // MEM->WB总线
+    input  [155:0] MEM_WB_bus_r, // MEM->WB总线
     output [  3:0] rf_wen,       // 寄存器写使能
     output [  4:0] rf_wdest,     // 寄存器写地址
     output [ 31:0] rf_wdata,     // 寄存器写数据
@@ -60,6 +60,9 @@ module wb(                       // 写回级
 
     assign exc_happened = fetch_error | inst_reserved | raddr_error 
                         | waddr_error | overflow | syscall | break;
+
+    wire [31:0] dm_addr;
+
     //pc
     wire [31:0] pc;    
     assign {wen,
@@ -81,6 +84,7 @@ module wb(                       // 写回级
             raddr_error,
             waddr_error,
             overflow,
+            dm_addr,
             pc} = MEM_WB_bus_r;
 //-----{MEM->WB总线}end
 
@@ -237,9 +241,10 @@ module wb(                       // 写回级
     begin
         if (fetch_error | raddr_error | waddr_error)
         begin 
-            badvaddr_r <= pc;
+            badvaddr_r <= dm_addr;
         end
     end
+
     //所有异常和eret发出的cancel信号
     assign cancel = (exc_happened | eret) & WB_over;
 //-----{cp0寄存器}begin

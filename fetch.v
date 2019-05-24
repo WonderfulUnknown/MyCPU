@@ -38,7 +38,6 @@ module fetch(                    // 取指级
     //Exception PC
     wire        exc_valid;
     wire [31:0] exc_pc;
-    wire        overflow;
     assign {exc_valid,exc_pc} = exc_bus;
     
     //pc+4

@@ -14,7 +14,7 @@ module mem(                          // 访存级
     output reg [  3:0] dm_wen,       // 访存写使能
     output reg [ 31:0] dm_wdata,     // 访存写数据
     output             MEM_over,     // MEM模块执行完成
-    output     [123:0] MEM_WB_bus,   // MEM->WB总线
+    output     [155:0] MEM_WB_bus,   // MEM->WB总线
     output     [ 31:0] mem_result,    //MEM传到WB的result为load结果或EXE结果
 
     //5级流水新增接口
@@ -107,8 +107,6 @@ module mem(                          // 访存级
 
     //访存读写地址
     assign dm_addr = exe_result;
-    //assign dm_addr[31:2] = exe_result[31:2];
-    //assign dm_addr[ 1:0] = ls_unaligned ? 2'd0 : exe_result[1:0];
 
     //(*)当begin end里面的任意信号发生变化时
     //会在当前begin end重新执行一遍begin end 
@@ -116,7 +114,8 @@ module mem(                          // 访存级
     //store操作的写使能
     always @ (*)    // 内存写使能信号
     begin
-        if (MEM_valid && inst_store) // 访存级有效时,且为store操作
+        // 访存级有效时,写地址无异常,且为store操作
+        if (MEM_valid & inst_store & !waddr_error) 
         begin
             if (ls_word)//SW指令
             begin
@@ -320,6 +319,7 @@ module mem(                          // 访存级
                          fetch_error,inst_reserved,
                          raddr_error,waddr_error,
                          overflow,                          //WB需用的信号，异常
+                         dm_addr,
                          pc};                               // PC值
 //-----{MEM->WB总线}begin
 

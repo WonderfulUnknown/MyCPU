@@ -144,10 +144,6 @@ module mycpu_top(
 
     //inst_sram && data_sram信号 
     assign inst_sram_en = {IF_valid};
-    //可能不需要的信号
-    // assign inst_sram_wea 
-    // assign inst_sram_rdata   
-
     assign data_sram_en = {MEM_valid};
 
     //展示5级的valid信号
@@ -159,13 +155,13 @@ module mycpu_top(
     wire [ 64:0] IF_ID_bus;   // IF->ID级总线
     wire [180:0] ID_EXE_bus;  // ID->EXE级总线
     wire [161:0] EXE_MEM_bus; // EXE->MEM级总线
-    wire [123:0] MEM_WB_bus;  // MEM->WB级总线
+    wire [155:0] MEM_WB_bus;  // MEM->WB级总线
     
     //锁存以上总线信号
     reg [ 64:0] IF_ID_bus_r;
     reg [180:0] ID_EXE_bus_r;
     reg [161:0] EXE_MEM_bus_r;
-    reg [123:0] MEM_WB_bus_r;
+    reg [155:0] MEM_WB_bus_r;
     
     //IF到ID的锁存信号
     always @(posedge clk)
@@ -227,10 +223,11 @@ module mycpu_top(
     wire [ 4:0] WB_wdest;
     
     //MEM与data_ram交互    
-    // wire [ 3:0] dm_wen;
+    wire [ 3:0] dm_wen;
     // wire [31:0] dm_addr;
     // wire [31:0] dm_wdata;
     // wire [31:0] dm_rdata;
+    assign data_sram_wen = dm_wen & {4{~cancel}};
 
     //ID与regfile交互
     wire [ 4:0] rs;
@@ -368,7 +365,8 @@ module mycpu_top(
       
         .dm_rdata     (data_sram_rdata),
         .dm_addr      (data_sram_addr),
-        .dm_wen       (data_sram_wen),
+        // .dm_wen       (data_sram_wen),
+        .dm_wen       (dm_wen),
         .dm_wdata     (data_sram_wdata),
       
         .MEM_over     (MEM_over     ),  // O, 1
