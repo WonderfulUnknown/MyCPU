@@ -38,9 +38,9 @@ module exe(                         // 执行级
     //异常
     wire fetch_error;   
     wire inst_reserved;
-    wire check_overflow; //是否检测溢出
-    wire overflow; //特定指令需要检测结果是否溢出
-    wire [1:0] adder_cout;     //加法器的进位
+    wire check_overflow;    //是否检测溢出
+    wire overflow;          //特定指令需要检测结果是否溢出
+    wire [1:0] adder_cout;  //加法器的进位
     
     assign overflow   = !check_overflow ? 0 :
                         (adder_cout[0]!=alu_result[31]) ? 1 : 0;

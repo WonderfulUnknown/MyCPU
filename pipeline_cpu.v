@@ -166,33 +166,49 @@ module mycpu_top(
     //IF到ID的锁存信号
     always @(posedge clk)
     begin
-        if(IF_over && ID_allow_in)
+        if (IF_over && ID_allow_in)
         begin
             IF_ID_bus_r <= IF_ID_bus;
+        end
+        else if (cancel)
+        begin 
+            IF_ID_bus_r <= 64'b0;
         end
     end
     //ID到EXE的锁存信号
     always @(posedge clk)
     begin
-        if(ID_over && EXE_allow_in)
+        if (ID_over && EXE_allow_in)
         begin
             ID_EXE_bus_r <= ID_EXE_bus;
+        end
+        else if (cancel)
+        begin 
+            ID_EXE_bus_r <= 180'b0;
         end
     end
     //EXE到MEM的锁存信号
     always @(posedge clk)
     begin
-        if(EXE_over && MEM_allow_in)
+        if (EXE_over && MEM_allow_in)
         begin
             EXE_MEM_bus_r <= EXE_MEM_bus;
+        end
+        else if (cancel)
+        begin 
+            EXE_MEM_bus_r <= 161'b0;
         end
     end    
     //MEM到WB的锁存信号
     always @(posedge clk)
     begin
-        if(MEM_over && WB_allow_in)
+        if (MEM_over && WB_allow_in)
         begin
             MEM_WB_bus_r <= MEM_WB_bus;
+        end
+        else if (cancel)
+        begin 
+            MEM_WB_bus_r <= 155'b0;
         end
     end
     // always @(posedge clk)
