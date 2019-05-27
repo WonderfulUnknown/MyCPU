@@ -149,3 +149,22 @@ syscall->exc_happend
     mycpu    : PC = 0xbfc004bc, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x80000000
 --------------------------------------------------------------
 ```
+
+使用暴力清空流水线的方式,在检测到cancel信号后,把五级流水段间寄存器全部清为0
+
+```c
+--------------------------------------------------------------
+[3475685 ns] Error!!!
+    reference: PC = 0xbfc28db0, wb_rf_wnum = 0x16, wb_rf_wdata = 0xb27f9789
+    mycpu    : PC = 0xbfc28db0, wb_rf_wnum = 0x16, wb_rf_wdata = 0x00000000
+--------------------------------------------------------------
+```
+
+修改badvaddr_r,test80 pass,死循环 
+
+```c
+[3502000 ns] Test is running, debug_wb_pc = 0xbfc17fb8
+        [3512000 ns] Test is running, debug_wb_pc = 0xbfc17fb8
+        [3522000 ns] Test is running, debug_wb_pc = 0xbfc17fb8
+        [3532000 ns] Test is running, debug_wb_pc = 0xbfc17fb8
+```

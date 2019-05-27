@@ -239,9 +239,13 @@ module wb(                       // 写回级
     assign cp0r_badvaddr = badvaddr_r;
     always @(posedge clk)
     begin
-        if (fetch_error | raddr_error | waddr_error)
+        if (raddr_error | waddr_error)
         begin 
             badvaddr_r <= dm_addr;
+        end
+        else if (fetch_error)
+        begin 
+            badvaddr_r <= pc;
         end
     end
 

@@ -202,13 +202,13 @@ module mycpu_top(
     //MEM到WB的锁存信号
     always @(posedge clk)
     begin
-        if (MEM_over && WB_allow_in)
-        begin
-            MEM_WB_bus_r <= MEM_WB_bus;
-        end
-        else if (cancel)
+        if (cancel)
         begin 
             MEM_WB_bus_r <= 155'b0;
+        end
+        else if (MEM_over && WB_allow_in)
+        begin
+            MEM_WB_bus_r <= MEM_WB_bus;
         end
     end
     // always @(posedge clk)
