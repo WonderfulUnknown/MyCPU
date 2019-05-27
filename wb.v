@@ -56,9 +56,9 @@ module wb(                       // 写回级
     wire raddr_error;
     wire waddr_error;
     wire overflow; 
-    wire exc_happened;
+    wire exc_happen;
 
-    assign exc_happened = fetch_error | inst_reserved | raddr_error 
+    assign exc_happen = fetch_error | inst_reserved | raddr_error 
                         | waddr_error | overflow | syscall | break;
 
     wire [31:0] dm_addr;
@@ -121,20 +121,28 @@ module wb(                       // 写回级
     wire [31:0] cp0r_cause;
     wire [31:0] cp0r_epc;
     wire [31:0] cp0r_badvaddr;
+    wire [31:0] cp0r_count;
+    wire [31:0] cp0r_compare;
 
     //写使能
     wire status_wen;
-    //wire cause_wen;
     wire epc_wen;
-    assign status_wen = mtc0 & (cp0r_addr=={5'd12,3'd0});//0x60
-    assign epc_wen    = mtc0 & (cp0r_addr=={5'd14,3'd0});
+    wire count_wen;
+    wire compare_wen;
+
+    assign status_wen  = mtc0 & (cp0r_addr=={5'd12,3'd0});//0x60
+    assign epc_wen     = mtc0 & (cp0r_addr=={5'd14,3'd0});
+    assign count_wen   = mtc0 & (cp0r_addr=={5'd9 ,3'd0});
+    assign compare_wen = mtc0 & (cp0r_addr=={5'd11,3'd0});
    
     //cp0寄存器读
     wire [31:0] cp0r_rdata;
     assign cp0r_rdata = (cp0r_addr=={5'd8 ,3'd0}) ? cp0r_badvaddr :
-                        (cp0r_addr=={5'd12,3'd0}) ? cp0r_status :
-                        (cp0r_addr=={5'd13,3'd0}) ? cp0r_cause  :
-                        (cp0r_addr=={5'd14,3'd0}) ? cp0r_epc    : 32'd0;
+                        (cp0r_addr=={5'd9 ,3'd0}) ? cp0r_count    :
+                        (cp0r_addr=={5'd11,3'd0}) ? cp0r_compare  : 
+                        (cp0r_addr=={5'd12,3'd0}) ? cp0r_status   :
+                        (cp0r_addr=={5'd13,3'd0}) ? cp0r_cause    :
+                        (cp0r_addr=={5'd14,3'd0}) ? cp0r_epc : 32'd0;
    
     //STATUS寄存器
     //目前只实现STATUS[1]位，即EXL域
@@ -153,7 +161,7 @@ module wb(                       // 写回级
         begin
             status_r[1] <= 1'b0;
         end
-        else if (exc_happened)
+        else if (exc_happen)
         begin 
             status_r[1] <= 1'b1;
         end 
@@ -181,39 +189,45 @@ module wb(                       // 写回级
 //    end
    
    //CAUSE寄存器
-   //目前只实现CAUSE[6:2]位，即ExcCode域,存放Exception编码
    //ExcCode域为软件只读，不可写，故不需要cause_wen
-    reg [4:0] cause_exc_code_r;
-    assign cp0r_cause = {25'd0,cause_exc_code_r,2'd0};
+    reg [31:0] cause_r;
+    assign cp0r_cause = cause_r;
     always @(posedge clk)
     begin
+        cause_r[31:7] <= 25'd0;
+        cause_r[ 1:0] <=  2'd0;
         if (fetch_error)
         begin 
-            cause_exc_code_r <= 5'd4;
+            cause_r[6:2] <= 5'd4;
         end
         else if (inst_reserved)
         begin
-            cause_exc_code_r <= 5'ha;
+            cause_r[6:2] <= 5'ha;
         end
         else if (syscall)
         begin
-            cause_exc_code_r <= 5'd8;
+            cause_r[6:2] <= 5'd8;
         end
         else if (overflow)
         begin 
-            cause_exc_code_r <= 5'hc;
+            cause_r[6:2] <= 5'hc;
         end
         else if (raddr_error)
         begin 
-            cause_exc_code_r <= 5'd4;
+            cause_r[6:2] <= 5'd4;
         end
         else if (waddr_error)
         begin 
-            cause_exc_code_r <= 5'd5;
+            cause_r[6:2] <= 5'd5;
         end
         else if (break)
         begin
-            cause_exc_code_r <= 5'd9;
+            cause_r[6:2] <= 5'd9;
+        end
+        else if (cp0r_count==cp0r_compare)//时钟中断
+        begin
+            cause_r[30] <= 1'b1;
+            cause_r[15] <= 1'b1;
         end
     end
    
@@ -224,7 +238,7 @@ module wb(                       // 写回级
     assign cp0r_epc = epc_r;
     always @(posedge clk)
     begin
-        if (exc_happened)
+        if (exc_happen)
         begin
             epc_r <= pc;
         end
@@ -249,9 +263,69 @@ module wb(                       // 写回级
         end
     end
 
+    //Count寄存器
+    reg [31:0] count_r;
+    reg flag;
+    assign cp0r_count = count_r;
+    always @(posedge clk)
+    begin
+        if (!resetn)
+        begin
+            count_r <= 32'b0;
+            flag    <=  1'b0;
+        end
+        else if (flag)
+        begin 
+            count_r <= count_r + 1'b1;
+            flag    <= 1'b0;
+        end
+        else if (!flag)
+        begin 
+            flag    <= 1'b1;
+        end
+        else if (count_wen)
+        begin 
+            count_r <= mem_result;
+        end
+    end  
+
+    //Compare寄存器
+    reg [31:0] compare_r;
+    assign cp0r_compare = compare_r;
+    always @(posedge clk)
+    begin
+        if (compare_wen)
+        begin
+            compare_r <= mem_result;
+        end
+    end
+
     //所有异常和eret发出的cancel信号
-    assign cancel = (exc_happened | eret) & WB_over;
-//-----{cp0寄存器}begin
+    assign cancel = (exc_happen | eret) & WB_over;
+//-----{cp0寄存器}end
+
+//-----{中断}begin
+    wire interrupt_en;
+    wire interrupt_happen;
+    wire hard_int;
+    wire soft_int;
+    wire clock_int;
+
+    assign interrupt_en = (status_r[0]==1'b1 && status_r[1]==1'b0);
+    assign hard_int     = !interrupt_en ? 1'b0 :
+                         ((status_r[10] & cause_r[10]) |
+                          (status_r[11] & cause_r[11]) |
+                          (status_r[12] & cause_r[12]) |
+                          (status_r[13] & cause_r[13]) |
+                          (status_r[14] & cause_r[14]) |
+                          (status_r[15] & cause_r[15])) ? 1'b1 : 1'b0;
+    assign soft_int     = !interrupt_en ? 1'b0 :
+                         ((status_r[8] & cause_r[8]) |
+                          (status_r[9] & cause_r[9])) ? 1'b1 : 1'b0;
+    assign clock_int    = !interrupt_en ? 1'b0 :
+                          (status_r[15] & cause_r[15]) ? 1'b1 : 1'b0;
+    assign interrupt_happen = hard_int | soft_int | clock_int;
+//-----{中断}end
 
 //-----{WB执行完成}begin
     //WB模块所有操作都可在一拍内完成
@@ -260,7 +334,7 @@ module wb(                       // 写回级
 //-----{WB执行完成}end
 
 //-----{WB->regfile信号}begin
-    assign rf_wen   = exc_happened ? 4'b0 : {4{wen & WB_over}};
+    assign rf_wen   = exc_happen ? 4'b0 : {4{wen & WB_over}};
     assign rf_wdest = wdest;
     assign rf_wdata = mfhi ? hi :
                       mflo ? lo :
@@ -270,10 +344,10 @@ module wb(                       // 写回级
 //-----{Exception pc信号}begin
     wire        exc_valid;
     wire [31:0] exc_pc;
-    assign exc_valid =(exc_happened | eret) & WB_valid;
+    assign exc_valid =(exc_happen | eret) & WB_valid;
     //eret返回地址为EPC寄存器的值
     //SYSCALL的excPC应该为{EBASE[31:10],10'h180},
-    assign exc_pc = exc_happened ? `EXC_ENTER_ADDR : cp0r_epc;
+    assign exc_pc = exc_happen ? `EXC_ENTER_ADDR : cp0r_epc;
     
     assign exc_bus = {exc_valid,exc_pc};
 //-----{Exception pc信号}end
