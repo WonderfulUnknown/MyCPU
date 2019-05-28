@@ -167,7 +167,8 @@ module wb(                       // 写回级
         end 
         else if (status_wen)
         begin 
-            status_r[1] <= mem_result[1];
+            //status_r[1] <= mem_result[1];
+            status_r <= mem_result;
         end
     end
 //    reg status_exl_r;
@@ -194,8 +195,16 @@ module wb(                       // 写回级
     assign cp0r_cause = cause_r;
     always @(posedge clk)
     begin
-        cause_r[31:7] <= 25'd0;
-        cause_r[ 1:0] <=  2'd0;
+        if (!resetn)
+        begin
+            cause_r[31:7] <= 25'd0;
+            cause_r[ 1:0] <=  2'd0;
+        end
+        if (cp0r_count==cp0r_compare)//时钟中断
+        begin
+            cause_r[30] <= 1'b1;
+            cause_r[15] <= 1'b1;
+        end
         if (fetch_error)
         begin 
             cause_r[6:2] <= 5'd4;
@@ -223,11 +232,6 @@ module wb(                       // 写回级
         else if (break)
         begin
             cause_r[6:2] <= 5'd9;
-        end
-        else if (cp0r_count==cp0r_compare)//时钟中断
-        begin
-            cause_r[30] <= 1'b1;
-            cause_r[15] <= 1'b1;
         end
     end
    
@@ -283,7 +287,7 @@ module wb(                       // 写回级
         begin 
             flag    <= 1'b1;
         end
-        else if (count_wen)
+        if (count_wen)
         begin 
             count_r <= mem_result;
         end
@@ -300,31 +304,32 @@ module wb(                       // 写回级
         end
     end
 
-    //所有异常和eret发出的cancel信号
+    //所有异常,中断和eret发出的cancel信号
     assign cancel = (exc_happen | eret) & WB_over;
+    //assign cancel = (exc_happen | int_happen | eret) & WB_over;
 //-----{cp0寄存器}end
 
 //-----{中断}begin
-    wire interrupt_en;
-    wire interrupt_happen;
+    wire int_en;//intterupt
+    wire int_happen;
     wire hard_int;
     wire soft_int;
     wire clock_int;
 
-    assign interrupt_en = (status_r[0]==1'b1 && status_r[1]==1'b0);
-    assign hard_int     = !interrupt_en ? 1'b0 :
+    assign int_en       = (status_r[0]==1'b1 && status_r[1]==1'b0);
+    assign hard_int     = !int_en ? 1'b0 :
                          ((status_r[10] & cause_r[10]) |
                           (status_r[11] & cause_r[11]) |
                           (status_r[12] & cause_r[12]) |
                           (status_r[13] & cause_r[13]) |
                           (status_r[14] & cause_r[14]) |
                           (status_r[15] & cause_r[15])) ? 1'b1 : 1'b0;
-    assign soft_int     = !interrupt_en ? 1'b0 :
+    assign soft_int     = !int_en ? 1'b0 :
                          ((status_r[8] & cause_r[8]) |
                           (status_r[9] & cause_r[9])) ? 1'b1 : 1'b0;
-    assign clock_int    = !interrupt_en ? 1'b0 :
+    assign clock_int    = !int_en ? 1'b0 :
                           (status_r[15] & cause_r[15]) ? 1'b1 : 1'b0;
-    assign interrupt_happen = hard_int | soft_int | clock_int;
+    assign int_happen   = exc_valid & (hard_int | soft_int | clock_int);
 //-----{中断}end
 
 //-----{WB执行完成}begin
@@ -344,11 +349,9 @@ module wb(                       // 写回级
 //-----{Exception pc信号}begin
     wire        exc_valid;
     wire [31:0] exc_pc;
-    assign exc_valid =(exc_happen | eret) & WB_valid;
+    assign exc_valid = (exc_happen | int_happen | eret) & WB_valid;
     //eret返回地址为EPC寄存器的值
-    //SYSCALL的excPC应该为{EBASE[31:10],10'h180},
-    assign exc_pc = exc_happen ? `EXC_ENTER_ADDR : cp0r_epc;
-    
+    assign exc_pc = (exc_happen | int_happen) ? `EXC_ENTER_ADDR : cp0r_epc;
     assign exc_bus = {exc_valid,exc_pc};
 //-----{Exception pc信号}end
 

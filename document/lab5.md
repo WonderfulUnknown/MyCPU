@@ -169,3 +169,13 @@ syscall->exc_happend
         [3522000 ns] Test is running, debug_wb_pc = 0xbfc17fb8
         [3532000 ns] Test is running, debug_wb_pc = 0xbfc17fb8
 ```
+
+支持时钟中断,时钟中断信号只需要维持一个周期
+
+```c
+--------------------------------------------------------------
+[ 439309 ns] Error!!!
+    reference: PC = 0xbfc00384, wb_rf_wnum = 0x1b, wb_rf_wdata = 0x00000000
+    mycpu    : PC = 0xbfc00380, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x00038000
+--------------------------------------------------------------
+```
