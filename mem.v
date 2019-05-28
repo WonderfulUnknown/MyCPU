@@ -8,13 +8,13 @@
 module mem(                          // 访存级
     input              clk,          // 时钟
     input              MEM_valid,    // 访存级有效信号
-    input      [161:0] EXE_MEM_bus_r,// EXE->MEM总线
+    input      [162:0] EXE_MEM_bus_r,// EXE->MEM总线
     input      [ 31:0] dm_rdata,     // 访存读数据
     output     [ 31:0] dm_addr,      // 访存读写地址
     output reg [  3:0] dm_wen,       // 访存写使能
     output reg [ 31:0] dm_wdata,     // 访存写数据
     output             MEM_over,     // MEM模块执行完成
-    output     [155:0] MEM_WB_bus,   // MEM->WB总线
+    output     [156:0] MEM_WB_bus,   // MEM->WB总线
     output     [ 31:0] mem_result,    //MEM传到WB的result为load结果或EXE结果
 
     //5级流水新增接口
@@ -47,7 +47,8 @@ module mem(                          // 访存级
     wire       break;
     wire       rf_wen;    //写回的寄存器写使能
     wire [4:0] rf_wdest;  //写回的目的寄存器
-   
+    wire delay_slot;
+
     //异常
     wire fetch_error;
     wire inst_reserved;
@@ -84,6 +85,7 @@ module mem(                          // 访存级
             fetch_error,
             inst_reserved,
             overflow,
+            delay_slot,
             pc         } = EXE_MEM_bus_r;  
 //-----{EXE->MEM总线}end
 
@@ -320,6 +322,7 @@ module mem(                          // 访存级
                          raddr_error,waddr_error,
                          overflow,                          //WB需用的信号，异常
                          dm_addr,
+                         delay_slot,
                          pc};                               // PC值
 //-----{MEM->WB总线}begin
 

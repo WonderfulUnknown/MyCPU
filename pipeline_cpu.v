@@ -152,16 +152,16 @@ module mycpu_top(
 //-------------------------{5级流水控制信号}end--------------------------//
 
 //--------------------------{5级间的总线}begin---------------------------//
-    wire [ 64:0] IF_ID_bus;   // IF->ID级总线
-    wire [180:0] ID_EXE_bus;  // ID->EXE级总线
-    wire [161:0] EXE_MEM_bus; // EXE->MEM级总线
-    wire [155:0] MEM_WB_bus;  // MEM->WB级总线
+    wire [ 65:0] IF_ID_bus;   // IF->ID级总线
+    wire [181:0] ID_EXE_bus;  // ID->EXE级总线
+    wire [162:0] EXE_MEM_bus; // EXE->MEM级总线
+    wire [156:0] MEM_WB_bus;  // MEM->WB级总线
     
     //锁存以上总线信号
-    reg [ 64:0] IF_ID_bus_r;
-    reg [180:0] ID_EXE_bus_r;
-    reg [161:0] EXE_MEM_bus_r;
-    reg [155:0] MEM_WB_bus_r;
+    reg [ 65:0] IF_ID_bus_r;
+    reg [181:0] ID_EXE_bus_r;
+    reg [162:0] EXE_MEM_bus_r;
+    reg [156:0] MEM_WB_bus_r;
     
     //IF到ID的锁存信号
     always @(posedge clk)
@@ -226,23 +226,15 @@ module mycpu_top(
 //---------------------------{5级间的总线}end----------------------------//
 
 //--------------------------{其他交互信号}begin--------------------------//
-    //跳转总线
-    wire [ 32:0] jbr_bus;    
-
-    // //IF与inst_rom交互
-    // wire [31:0] inst_addr;
-    // wire [31:0] inst;
-
-    //ID与EXE、MEM、WB交互
-    // wire [ 4:0] EXE_wdest;
-    // wire [ 4:0] MEM_wdest;
+    wire [32:0] jbr_bus;    //跳转总线
     wire [ 4:0] WB_wdest;
-    
+
+    wire delay_slot;
+    wire inst_jbr;
+    assign delay_slot = inst_jbr;
+
     //MEM与data_ram交互    
     wire [ 3:0] dm_wen;
-    // wire [31:0] dm_addr;
-    // wire [31:0] dm_wdata;
-    // wire [31:0] dm_rdata;
     assign data_sram_wen = dm_wen & {4{~cancel}};
 
     //ID与regfile交互
@@ -281,9 +273,6 @@ module mycpu_top(
     wire [31:0] exe_result;
     wire [31:0] mem_result;
 
-    //总线改变的时候记得修改位数 
-    //assign exe_result = EXE_MEM_bus[132:101];// 168-36
-    //assign mem_result = MEM_WB_bus[113:81];// 119-6
     //应该在下一个周期才把数据给出
     assign to_alu     = forwardA ? exe_result : 
                         forwardB ? mem_result : 32'h0000;
@@ -305,13 +294,12 @@ module mycpu_top(
         .resetn    (resetn    ),  // I, 1
         .IF_valid  (IF_valid  ),  // I, 1
         .next_fetch(next_fetch),  // I, 1
-        //.inst      (inst      ),  // I, 32
         .inst      (inst_sram_rdata),
         .jbr_bus   (jbr_bus   ),  // I, 33
-        //.inst_addr (inst_addr ),  // O, 32
         .inst_addr (inst_sram_addr),
         .IF_over   (IF_over   ),  // O, 1
         .IF_ID_bus (IF_ID_bus ),  // O, 64
+        .delay_slot(inst_jbr  ),
 
         //5级流水新增接口
         .exc_bus   (exc_bus   ),  // I, 32
@@ -331,7 +319,7 @@ module mycpu_top(
         .rs         (rs         ),  // O, 5
         .rt         (rt         ),  // O, 5
         .jbr_bus    (jbr_bus    ),  // O, 33
-//        .inst_jbr   (inst_jbr   ),  // O, 1
+        .inst_jbr   (inst_jbr   ),  // O, 1
         .ID_over    (ID_over    ),  // O, 1
         .ID_EXE_bus (ID_EXE_bus ),  // O, 167
         
@@ -419,15 +407,6 @@ module mycpu_top(
         .LO_data     (LO_data     )   // O, 32
     );
 
-    // // inst_rom inst_rom_module(         // 指令存储器
-    // inst_ram inst_ram_module(
-    //     .clka       (clk           ),  // I, 1 ,时钟
-    //     //.addra      (inst_addr[9:2]),  // I, 8 ,指令地址
-    //     .addra      (inst_sram_addr[9:2]),
-    //     // .douta      (inst          )   // O, 32,指令
-    //     .douta      (inst_sram_rdata)
-    // );
-
     regfile rf_module(        // 寄存器堆模块
         .clk    (clk      ),  // I, 1
         .wen    (rf_wen   ),  // I, 1
@@ -454,21 +433,6 @@ module mycpu_top(
         .forwardA   (forwardA  ),
         .forwardB   (forwardB  )
     );
-
-    // data_ram data_ram_module(   // 数据存储模块
-    //     .clka   (clk         ),  // I, 1,  时钟
-    //     .wea    (dm_wen      ),  // I, 1,  写使能
-    //     .addra  (dm_addr[9:2]),  // I, 8,  读地址
-    //     .dina   (dm_wdata    ),  // I, 32, 写数据
-    //     .douta  (dm_rdata    ),  // O, 32, 读数据
-
-    //     //display mem
-    //     .clkb   (clk          ),  // I, 1,  时钟
-    //     .web    (4'd0         ),  // 不使用端口2的写功能
-    //     .addrb  (mem_addr[9:2]),  // I, 8,  读地址
-    //     .doutb  (mem_data     ),  // I, 32, 写数据
-    //     .dinb   (32'd0        )   // 不使用端口2的写功能
-    // );
 
     //测试程序testbench需要
     assign debug_wb_pc = WB_pc;

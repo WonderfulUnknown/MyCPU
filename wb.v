@@ -9,7 +9,7 @@
 
 module wb(                       // 写回级
     input          WB_valid,     // 写回级有效
-    input  [155:0] MEM_WB_bus_r, // MEM->WB总线
+    input  [156:0] MEM_WB_bus_r, // MEM->WB总线
     output [  3:0] rf_wen,       // 寄存器写使能
     output [  4:0] rf_wdest,     // 寄存器写地址
     output [ 31:0] rf_wdata,     // 寄存器写数据
@@ -62,6 +62,7 @@ module wb(                       // 写回级
                         | waddr_error | overflow | syscall | break;
 
     wire [31:0] dm_addr;
+    wire delay_slot;
 
     //pc
     wire [31:0] pc;    
@@ -85,6 +86,7 @@ module wb(                       // 写回级
             waddr_error,
             overflow,
             dm_addr,
+            delay_slot,
             pc} = MEM_WB_bus_r;
 //-----{MEM->WB总线}end
 
@@ -101,7 +103,7 @@ module wb(                       // 写回级
         begin
             hi <= mem_result;
         end
-        else 
+        else if (!resetn)
         begin 
             hi <= 32'd0;
         end
@@ -113,7 +115,7 @@ module wb(                       // 写回级
         begin
             lo <= lo_result;
         end
-        else
+        else if (!resetn)
         begin
             lo <= 32'd0; 
         end
@@ -122,8 +124,6 @@ module wb(                       // 写回级
 
 //-----{cp0寄存器}begin
 // cp0寄存器即是协处理器0寄存器
-// 由于目前设计的CPU并不完备，所用到的cp0寄存器也很少
-// 故暂时只实现STATUS(12.0),CAUSE(13.0),EPC(14.0)这三个
 // 每个CP0寄存器都是使用5位的cp0号
     wire [31:0] cp0r_status;
     wire [31:0] cp0r_cause;
@@ -175,7 +175,6 @@ module wb(                       // 写回级
         end 
         else if (status_wen)
         begin 
-            //status_r[1] <= mem_result[1];
             status_r <= mem_result;
         end
     end
@@ -191,7 +190,8 @@ module wb(                       // 写回级
             cause_r[31:7] <= 25'd0;
             cause_r[ 1:0] <=  2'd0;
         end
-        if (cp0r_count==cp0r_compare)//时钟中断
+        //时钟中断
+        if (cp0r_count==cp0r_compare)
         begin
             cause_r[30] <= 1'b1;
             cause_r[15] <= 1'b1;
@@ -201,6 +201,12 @@ module wb(                       // 写回级
             cause_r[30] <= 1'b0;
             cause_r[15] <= 1'b0;                 
         end
+        //发生异常的指令是否在延迟槽中
+        if (exc_happen | int_happen)
+        begin
+            cause_r[31] <= delay_slot;
+        end
+        //根据不同类型的异常赋值
         if (fetch_error)
         begin 
             cause_r[6:2] <= 5'd4;
@@ -238,9 +244,16 @@ module wb(                       // 写回级
     assign cp0r_epc = epc_r;
     always @(posedge clk)
     begin
-        if (exc_happen)
+        if (exc_happen | int_happen)
         begin
-            epc_r <= pc;
+            if (delay_slot)
+            begin
+                epc_r <= pc - 32'd4;
+            end
+            else
+            begin
+                epc_r <= pc;
+            end
         end
         else if (epc_wen)
         begin

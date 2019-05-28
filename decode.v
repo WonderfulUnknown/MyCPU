@@ -7,15 +7,15 @@
 //*************************************************************************
 module decode(                      // 译码级
     input              ID_valid,    // 译码级有效信号
-    input      [ 64:0] IF_ID_bus_r, // IF->ID总线
+    input      [ 65:0] IF_ID_bus_r, // IF->ID总线
     input      [ 31:0] rs_value,    // 第一源操作数值
     input      [ 31:0] rt_value,    // 第二源操作数值
     output     [  4:0] rs,          // 第一源操作数地址 
     output     [  4:0] rt,          // 第二源操作数地址
     output     [ 32:0] jbr_bus,     // 跳转总线
-//  output             inst_jbr,    // 指令为跳转分支指令,五级流水不需要
+    output             inst_jbr,    // 指令为跳转分支指令
     output             ID_over,     // ID模块执行完成
-    output     [180:0] ID_EXE_bus,  // ID->EXE总线
+    output     [181:0] ID_EXE_bus,  // ID->EXE总线
     
     //5级流水新增
     input              IF_over,     //对于分支指令，需要该信号
@@ -36,7 +36,8 @@ module decode(                      // 译码级
     wire [31:0] pc;
     wire [31:0] inst;
     wire fetch_error;
-    assign {pc, inst, fetch_error} = IF_ID_bus_r;  // IF->ID总线传PC和指令
+    wire delay_slot;
+    assign {pc, inst, fetch_error, delay_slot} = IF_ID_bus_r;  // IF->ID总线传PC和指令
 //-----{IF->ID总线}end
 
 //-----{指令译码}begin
@@ -281,7 +282,7 @@ module decode(                      // 译码级
 //-----{指令译码}end
 
 //-----{分支指令执行}begin
-   //bd_pc,分支跳转指令参与计算的为延迟槽指令的PC值，即当前分支指令的PC+4
+    //bd_pc,分支跳转指令参与计算的为延迟槽指令的PC值，即当前分支指令的PC+4
     wire [31:0] bd_pc;   //延迟槽指令PC值
     assign bd_pc = pc + 3'b100;
     
@@ -317,7 +318,7 @@ module decode(                      // 译码级
                       | inst_BGEZAL | inst_BLTZAL;
     assign id_need_rt = inst_BEQ  | inst_BNE;
 
-    // 分支跳转目标地址：PC=PC+offset<<2
+    //分支跳转目标地址：PC=PC+offset<<2
     assign br_target[31:2] = bd_pc[31:2] + {{14{offset[15]}}, offset};  
     assign br_target[1:0]  = bd_pc[1:0];
     
@@ -333,8 +334,6 @@ module decode(                      // 译码级
 
 //-----{ID执行完成}begin
     //由于是流水的，存在数据相关
-    // wire rs_wait;
-    // wire rt_wait;
     //从rs(非0号寄存器)中取值，且存在数据相关
     assign rs_wait = ~inst_no_rs & (rs!=5'd0)
                    & ( (rs==EXE_wdest) | (rs==MEM_wdest) | (rs==WB_wdest) );
@@ -462,6 +461,8 @@ module decode(                      // 译码级
                          //异常
                          fetch_error,
                          inst_reserved,
+                         //延迟槽
+                         delay_slot,
                          pc};                                  //PC值
 //-----{ID->EXE总线}end
 

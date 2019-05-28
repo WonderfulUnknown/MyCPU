@@ -15,8 +15,9 @@ module fetch(                    // 取指级
     input      [32:0] jbr_bus,   // 跳转总线
     output     [31:0] inst_addr, // 发往inst_rom的取指地址
     output reg        IF_over,   // IF模块执行完成
-    output     [64:0] IF_ID_bus, // IF->ID总线
-    
+    output     [65:0] IF_ID_bus, // IF->ID总线
+    input             delay_slot,// 指令位于延迟槽中
+
     //5级流水新增接口
     input      [32:0] exc_bus,   // Exception pc总线
         
@@ -92,7 +93,7 @@ module fetch(                    // 取指级
 //-----{IF执行完成}end
 
 //-----{IF->ID总线}begin
-    assign IF_ID_bus = {pc, inst, fetch_error};  // 取指级有效时，锁存PC和指令
+    assign IF_ID_bus = {pc, inst, fetch_error, delay_slot};  // 取指级有效时，锁存PC和指令
 //-----{IF->ID总线}end
 
 //-----{展示IF模块的PC值和指令}begin

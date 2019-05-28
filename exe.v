@@ -7,9 +7,9 @@
 //*************************************************************************
 module exe(                         // 执行级
     input              EXE_valid,   // 执行级有效信号
-    input      [180:0] ID_EXE_bus_r,// ID->EXE总线
+    input      [181:0] ID_EXE_bus_r,// ID->EXE总线
     output             EXE_over,    // EXE模块执行完成
-    output     [161:0] EXE_MEM_bus, // EXE->MEM总线
+    output     [162:0] EXE_MEM_bus, // EXE->MEM总线
     output     [ 31:0] exe_result,  // EXE阶段的结果
 
     //5级流水新增
@@ -42,6 +42,10 @@ module exe(                         // 执行级
     wire overflow;          //特定指令需要检测结果是否溢出
     wire [1:0] adder_cout;  //加法器的进位
     
+    wire syscall;   //syscall和eret,break在写回级有特殊的操作 
+    wire eret;
+    wire break;
+
     assign overflow   = !check_overflow ? 0 :
                         (adder_cout[0]!=alu_result[31]) ? 1 : 0;
     
@@ -60,12 +64,10 @@ module exe(                         // 执行级
     wire mtc0;
     wire mfc0;
     wire [7:0] cp0r_addr;
-    wire       syscall;   //syscall和eret,break在写回级有特殊的操作 
-    wire       eret;
-    wire       break;
     wire       rf_wen;    //写回的寄存器写使能
     wire [4:0] rf_wdest;  //写回的目的寄存器
-    
+    wire delay_slot;
+
     //pc
     wire [31:0] pc;
     assign {multiply,
@@ -95,6 +97,7 @@ module exe(                         // 执行级
             inst_R,
             fetch_error,
             inst_reserved,
+            delay_slot,
             pc          } = ID_EXE_bus_r;
 //-----{ID->EXE总线}end
 
@@ -112,9 +115,6 @@ module exe(                         // 执行级
         .alu_src2     (alu_src2),
         .alu_result   (alu_result),  // O, 32, ALU结果
         .adder_cout   (adder_cout)
-        // .adder_cout   (adder_cout),
-        // .overflow     (overflow),
-        // .check_overflow (check_overflow)
     );
 //-----{ALU}end
 
@@ -198,6 +198,7 @@ module exe(                         // 执行级
                           //异常
                           fetch_error,inst_reserved,       //WB需用的信号，异常
                           overflow,                        //WB需用的信号，异常
+                          delay_slot,
                           pc};                             //PC
 //-----{EXE->MEM总线}end
 

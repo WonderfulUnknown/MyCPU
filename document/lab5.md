@@ -56,8 +56,9 @@ make: *** [all] Error 2
 整型溢出例外、陷阱例外、系统调用例外
 地址错例外—数据访
 
+- 只能注释前68个功能测试点
 - 假设在wb阶段将exc_happened信号传出能够及时使得上一阶段的MEM_en清空(否则需要单独考虑异常指令的下一条指令为sw指令的情况),同时使用cancel指令传给CPU使得前面指令的写使能都清空.
-- 考虑把是分支跳转指令的信号传给cpu,用reg存储,然后下个周期传给ID,使得is_delay_slot信号为1,然后通过bus向后传递
+- 考虑把是分支跳转指令的信号传给cpu,用reg存储,然后下个周期传给ID,使得is_delay_slot信号为1,然后通过bus向后传递(也可以传给CPU,然后CPU传给IF阶段,然后通过bus把信号传递下来给is_delay_slot)
 - 使用if (!resetn)来初始化
 
 ## debug
@@ -188,5 +189,26 @@ syscall->exc_happend
 [ 440119 ns] Error!!!
     reference: PC = 0xbfc005d0, wb_rf_wnum = 0x1a, wb_rf_wdata = 0xbfc17fb8
     mycpu    : PC = 0xbfc005d0, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x80000000
+--------------------------------------------------------------
+```
+
+发生中断的时候也会给cp0r_epc赋值
+(可能是延迟槽指令,需要回退到上一条指令)
+
+```c
+--------------------------------------------------------------
+[  21468 ns] Error!!!
+    reference: PC = 0xbfc005d0, wb_rf_wnum = 0x1a, wb_rf_wdata = 0xbfc011f8
+    mycpu    : PC = 0xbfc005d0, wb_rf_wnum = 0x1a, wb_rf_wdata = 0xbfc011fc
+--------------------------------------------------------------
+```
+
+完成延迟槽指令的识别,仍有错误
+
+```c
+--------------------------------------------------------------
+[  18880 ns] Error!!!
+    reference: PC = 0xbfc00544, wb_rf_wnum = 0x1a, wb_rf_wdata = 0xb27f97ab
+    mycpu    : PC = 0xbfc00544, wb_rf_wnum = 0x1a, wb_rf_wdata = 0xb27f97a7
 --------------------------------------------------------------
 ```
