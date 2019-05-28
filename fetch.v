@@ -93,7 +93,7 @@ module fetch(                    // 取指级
 //-----{IF执行完成}end
 
 //-----{IF->ID总线}begin
-    assign IF_ID_bus = {pc, inst, fetch_error, delay_slot};  // 取指级有效时，锁存PC和指令
+    assign IF_ID_bus = {inst, fetch_error, delay_slot, pc};  // 取指级有效时，锁存PC和指令
 //-----{IF->ID总线}end
 
 //-----{展示IF模块的PC值和指令}begin

@@ -37,7 +37,7 @@ module decode(                      // 译码级
     wire [31:0] inst;
     wire fetch_error;
     wire delay_slot;
-    assign {pc, inst, fetch_error, delay_slot} = IF_ID_bus_r;  // IF->ID总线传PC和指令
+    assign {inst, fetch_error, delay_slot, pc} = IF_ID_bus_r;  // IF->ID总线传PC和指令
 //-----{IF->ID总线}end
 
 //-----{指令译码}begin

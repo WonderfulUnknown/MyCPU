@@ -134,11 +134,13 @@ module wb(                       // 写回级
 
     //写使能
     wire status_wen;
+    wire cause_wen;
     wire epc_wen;
     wire count_wen;
     wire compare_wen;
 
-    assign status_wen  = mtc0 & (cp0r_addr=={5'd12,3'd0});//0x60
+    assign status_wen  = mtc0 & (cp0r_addr=={5'd12,3'd0});
+    assign cause_wen   = mtc0 & (cp0r_addr=={5'd13,3'd0});
     assign epc_wen     = mtc0 & (cp0r_addr=={5'd14,3'd0});
     assign count_wen   = mtc0 & (cp0r_addr=={5'd9 ,3'd0});
     assign compare_wen = mtc0 & (cp0r_addr=={5'd11,3'd0});
@@ -168,10 +170,12 @@ module wb(                       // 写回级
         else if (eret)
         begin
             status_r[1] <= 1'b0;
+            // status_r[0] <= 1'b1;
         end
-        else if (exc_happen)
+        else if (exc_happen | int_happen)
         begin 
             status_r[1] <= 1'b1;
+            // status_r[0] <= 1'b0;
         end 
         else if (status_wen)
         begin 
@@ -180,7 +184,6 @@ module wb(                       // 写回级
     end
    
     //CAUSE寄存器
-    //ExcCode域为软件只读，不可写，故不需要cause_wen
     reg [31:0] cause_r;
     assign cp0r_cause = cause_r;
     always @(posedge clk)
@@ -191,16 +194,18 @@ module wb(                       // 写回级
             cause_r[ 1:0] <=  2'd0;
         end
         //时钟中断
+        // if (count_r==compare_r)
         if (cp0r_count==cp0r_compare)
         begin
             cause_r[30] <= 1'b1;
             cause_r[15] <= 1'b1;
+            cause_r[6:2] <= 5'd0;
         end
-        else
-        begin 
-            cause_r[30] <= 1'b0;
-            cause_r[15] <= 1'b0;                 
-        end
+        // else
+        // begin 
+        //     cause_r[30] <= 1'b0;
+        //     cause_r[15] <= 1'b0;                 
+        // end
         //发生异常的指令是否在延迟槽中
         if (exc_happen | int_happen)
         begin
@@ -234,6 +239,15 @@ module wb(                       // 写回级
         else if (break)
         begin
             cause_r[6:2] <= 5'd9;
+        end
+        else if (int_happen)//中断
+        begin
+            cause_r[6:2] <= 5'd0;
+        end
+        //软件中断标识位可由软件设置和清除
+        if (cause_wen)
+        begin
+            cause_r[9:8] <= mem_result[9:8];
         end
     end
    
@@ -326,18 +340,17 @@ module wb(                       // 写回级
     wire clock_int;
 
     assign int_en       = (status_r[0]==1'b1 && status_r[1]==1'b0);
-    assign hard_int     = !int_en ? 1'b0 :
-                         ((status_r[10] & cause_r[10]) |
-                          (status_r[11] & cause_r[11]) |
-                          (status_r[12] & cause_r[12]) |
-                          (status_r[13] & cause_r[13]) |
-                          (status_r[14] & cause_r[14]) |
-                          (status_r[15] & cause_r[15])) ? 1'b1 : 1'b0;
-    assign soft_int     = !int_en ? 1'b0 :
-                         ((status_r[8] & cause_r[8]) |
-                          (status_r[9] & cause_r[9])) ? 1'b1 : 1'b0;
-    assign clock_int    = !int_en ? 1'b0 :
-                          (status_r[15] & cause_r[15]) ? 1'b1 : 1'b0;
+    assign hard_int     = (((status_r[10] & cause_r[10]) |
+                            (status_r[11] & cause_r[11]) |
+                            (status_r[12] & cause_r[12]) |
+                            (status_r[13] & cause_r[13]) |
+                            (status_r[14] & cause_r[14]) |
+                            (status_r[15] & cause_r[15])) & int_en) 
+                            ? 1'b1 : 1'b0;
+    assign soft_int     = (((status_r[8] & cause_r[8]) |
+                            (status_r[9] & cause_r[9])) & int_en)
+                            ? 1'b1 : 1'b0;
+    assign clock_int    = (status_r[15] & cause_r[15] & int_en) ? 1'b1 : 1'b0;
     assign int_happen   = hard_int | soft_int | clock_int;
 //-----{中断}end
 

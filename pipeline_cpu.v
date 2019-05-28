@@ -163,40 +163,45 @@ module mycpu_top(
     reg [162:0] EXE_MEM_bus_r;
     reg [156:0] MEM_WB_bus_r;
     
+    //!修改总线的时候记得修改清空流水线的位数
+    //*为了debug方便没有清空pc
     //IF到ID的锁存信号
     always @(posedge clk)
     begin
-        if (IF_over && ID_allow_in)
+        if (cancel)
+        begin 
+            IF_ID_bus_r[65:32] <= 24'd0;
+            IF_ID_bus_r[31:0 ] <= IF_ID_bus[31:0];
+        end
+        else if (IF_over && ID_allow_in)
         begin
             IF_ID_bus_r <= IF_ID_bus;
-        end
-        else if (cancel)
-        begin 
-            IF_ID_bus_r <= 64'b0;
         end
     end
     //ID到EXE的锁存信号
     always @(posedge clk)
     begin
-        if (ID_over && EXE_allow_in)
+        if (cancel)
+        begin 
+            ID_EXE_bus_r[181:32] <= 150'b0;
+            ID_EXE_bus_r[ 31:0 ] <= ID_EXE_bus[31:0];
+        end
+        else if (ID_over && EXE_allow_in)
         begin
             ID_EXE_bus_r <= ID_EXE_bus;
-        end
-        else if (cancel)
-        begin 
-            ID_EXE_bus_r <= 180'b0;
         end
     end
     //EXE到MEM的锁存信号
     always @(posedge clk)
     begin
-        if (EXE_over && MEM_allow_in)
+        if (cancel)
+        begin 
+            EXE_MEM_bus_r[162:32] <= 131'd0;
+            EXE_MEM_bus_r[ 31:0 ] <= EXE_MEM_bus[31:0];
+        end
+        else if (EXE_over && MEM_allow_in)
         begin
             EXE_MEM_bus_r <= EXE_MEM_bus;
-        end
-        else if (cancel)
-        begin 
-            EXE_MEM_bus_r <= 161'b0;
         end
     end    
     //MEM到WB的锁存信号
@@ -204,7 +209,8 @@ module mycpu_top(
     begin
         if (cancel)
         begin 
-            MEM_WB_bus_r <= 155'b0;
+            MEM_WB_bus_r[156:32] <= 125'b0;
+            MEM_WB_bus_r[ 31:0 ] <= MEM_WB_bus[31:0];
         end
         else if (MEM_over && WB_allow_in)
         begin
