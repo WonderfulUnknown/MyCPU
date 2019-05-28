@@ -101,6 +101,10 @@ module wb(                       // 写回级
         begin
             hi <= mem_result;
         end
+        else 
+        begin 
+            hi <= 32'd0;
+        end
     end
     //要写入LO的数据存放在lo_result里
     always @(posedge clk)
@@ -108,6 +112,10 @@ module wb(                       // 写回级
         if (lo_write)
         begin
             lo <= lo_result;
+        end
+        else
+        begin
+            lo <= 32'd0; 
         end
     end
 //-----{HI/LO寄存器}end
@@ -171,26 +179,9 @@ module wb(                       // 写回级
             status_r <= mem_result;
         end
     end
-//    reg status_exl_r;
-//    assign cp0r_status = {30'd0,status_exl_r,1'b0};
-//    always @(posedge clk)
-//    begin
-//        if (!resetn || eret)
-//        begin
-//            status_exl_r <= 1'b0;
-//        end
-//        else if (syscall)
-//        begin
-//            status_exl_r <= 1'b1;
-//        end
-//        else if (status_wen)
-//        begin
-//            status_exl_r <= mem_result[1];
-//        end
-//    end
    
-   //CAUSE寄存器
-   //ExcCode域为软件只读，不可写，故不需要cause_wen
+    //CAUSE寄存器
+    //ExcCode域为软件只读，不可写，故不需要cause_wen
     reg [31:0] cause_r;
     assign cp0r_cause = cause_r;
     always @(posedge clk)
@@ -204,6 +195,11 @@ module wb(                       // 写回级
         begin
             cause_r[30] <= 1'b1;
             cause_r[15] <= 1'b1;
+        end
+        else
+        begin 
+            cause_r[30] <= 1'b0;
+            cause_r[15] <= 1'b0;                 
         end
         if (fetch_error)
         begin 
@@ -329,7 +325,7 @@ module wb(                       // 写回级
                           (status_r[9] & cause_r[9])) ? 1'b1 : 1'b0;
     assign clock_int    = !int_en ? 1'b0 :
                           (status_r[15] & cause_r[15]) ? 1'b1 : 1'b0;
-    assign int_happen   = exc_valid & (hard_int | soft_int | clock_int);
+    assign int_happen   = hard_int | soft_int | clock_int;
 //-----{中断}end
 
 //-----{WB执行完成}begin

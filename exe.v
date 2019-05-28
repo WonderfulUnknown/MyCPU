@@ -182,7 +182,8 @@ module exe(                         // 执行级
                         multiply ? product[63:32] : 
                         divide   ? remainder : alu_result;
     assign lo_result  = mtlo ? alu_operand1 : 
-                        multiply ? product[31:0] : quotient;
+                        multiply ? product[31:0] :
+                        divide   ? quotient : 32'd0;
     assign hi_write   = multiply | divide | mthi;
     assign lo_write   = multiply | divide | mtlo;
 

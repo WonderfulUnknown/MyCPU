@@ -57,7 +57,8 @@ make: *** [all] Error 2
 地址错例外—数据访
 
 - 假设在wb阶段将exc_happened信号传出能够及时使得上一阶段的MEM_en清空(否则需要单独考虑异常指令的下一条指令为sw指令的情况),同时使用cancel指令传给CPU使得前面指令的写使能都清空.
-- 考虑WB_over是否可以,考虑eret是否归为exc_happened(应该不需要)
+- 考虑把是分支跳转指令的信号传给cpu,用reg存储,然后下个周期传给ID,使得is_delay_slot信号为1,然后通过bus向后传递
+- 使用if (!resetn)来初始化
 
 ## debug
 
@@ -170,12 +171,22 @@ syscall->exc_happend
         [3532000 ns] Test is running, debug_wb_pc = 0xbfc17fb8
 ```
 
-支持时钟中断,时钟中断信号只需要维持一个周期
+支持时钟中断
 
 ```c
 --------------------------------------------------------------
 [ 439309 ns] Error!!!
     reference: PC = 0xbfc00384, wb_rf_wnum = 0x1b, wb_rf_wdata = 0x00000000
     mycpu    : PC = 0xbfc00380, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x00038000
+--------------------------------------------------------------
+```
+
+使得时钟中断信号只维持一个周期
+
+```c
+--------------------------------------------------------------
+[ 440119 ns] Error!!!
+    reference: PC = 0xbfc005d0, wb_rf_wnum = 0x1a, wb_rf_wdata = 0xbfc17fb8
+    mycpu    : PC = 0xbfc005d0, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x80000000
 --------------------------------------------------------------
 ```
