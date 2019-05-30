@@ -228,3 +228,13 @@ syscall->exc_happend
 ```c
 [  22000 ns] Test is running, debug_wb_pc = 0xbfc011fc
 ```
+
+使用reg存储int_happen信号,test12 pass
+
+```c
+--------------------------------------------------------------
+[  20658 ns] Error!!!
+    reference: PC = 0xbfc00384, wb_rf_wnum = 0x1b, wb_rf_wdata = 0x00000000
+    mycpu    : PC = 0xbfc00380, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x00038000
+--------------------------------------------------------------
+```

@@ -334,7 +334,8 @@ module wb(                       // 写回级
 
 //-----{中断}begin
     wire int_en;//intterupt
-    wire int_happen;
+    //wire int_happen;
+    reg int_happen;
     wire hard_int;
     wire soft_int;
     wire clock_int;
@@ -351,7 +352,22 @@ module wb(                       // 写回级
                             (status_r[9] & cause_r[9])) & int_en)
                             ? 1'b1 : 1'b0;
     assign clock_int    = (status_r[15] & cause_r[15] & int_en) ? 1'b1 : 1'b0;
-    assign int_happen   = hard_int | soft_int | clock_int;
+    //assign int_happen   = (hard_int | soft_int | clock_int) & int_en;
+    always @(posedge clk)
+    begin
+        if (!resetn) 
+        begin 
+            int_happen <= 1'b0;
+        end
+        else if ((hard_int | soft_int | clock_int) & int_en)
+        begin 
+            int_happen <= 1'b1;
+        end
+        // else if (exc_valid)
+	    // begin
+	    //     int_happen <= 1'b0;
+	    // end
+    end
 //-----{中断}end
 
 //-----{WB执行完成}begin
