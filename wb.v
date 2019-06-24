@@ -194,18 +194,18 @@ module wb(                       // 写回级
             cause_r[ 1:0] <=  2'd0;
         end
         //时钟中断
-        // if (count_r==compare_r)
-        if (cp0r_count==cp0r_compare)
+        //需要考虑到一开始会给compare写0,此时count为0不应该触发中断
+        if (compare_wen && WB_valid)
+        begin 
+            cause_r[30] <= 1'b0;
+            cause_r[15] <= 1'b0;                 
+        end
+        else if (count_r==compare_r)
         begin
             cause_r[30] <= 1'b1;
             cause_r[15] <= 1'b1;
             cause_r[6:2] <= 5'd0;
         end
-        // else
-        // begin 
-        //     cause_r[30] <= 1'b0;
-        //     cause_r[15] <= 1'b0;                 
-        // end
         //发生异常的指令是否在延迟槽中
         if (exc_happen | int_happen)
         begin
@@ -328,8 +328,8 @@ module wb(                       // 写回级
     end
 
     //所有异常,中断和eret发出的cancel信号
-    assign cancel = (exc_happen | eret) & WB_over;
-    //assign cancel = (exc_happen | int_happen | eret) & WB_over;
+    //assign cancel = (exc_happen | eret) & WB_over;
+    assign cancel = (exc_happen | int_happen | eret) & WB_over;
 //-----{cp0寄存器}end
 
 //-----{中断}begin
@@ -351,7 +351,7 @@ module wb(                       // 写回级
     assign soft_int     = (((status_r[8] & cause_r[8]) |
                             (status_r[9] & cause_r[9])) & int_en)
                             ? 1'b1 : 1'b0;
-    assign clock_int    = (status_r[15] & cause_r[15] & int_en) ? 1'b1 : 1'b0;
+    assign clock_int    = (cause_r[30] & status_r[15] & cause_r[15] & int_en) ? 1'b1 : 1'b0;
     //assign int_happen   = (hard_int | soft_int | clock_int) & int_en;
     always @(posedge clk)
     begin
@@ -362,6 +362,10 @@ module wb(                       // 写回级
         else if ((hard_int | soft_int | clock_int) & int_en)
         begin 
             int_happen <= 1'b1;
+        end
+        else 
+        begin 
+            int_happen <= 1'b0;
         end
         // else if (exc_valid)
 	    // begin

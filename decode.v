@@ -29,6 +29,9 @@ module decode(                      // 译码级
     output             rs_wait,
     output             rt_wait,
 
+    //cancel
+    input              cancel,//撤销jbr_bus
+
     //展示PC
     output     [ 31:0] ID_pc
 );
@@ -325,7 +328,7 @@ module decode(                      // 译码级
     //jump and branch指令
     wire jbr_taken;
     wire [31:0] jbr_target;
-    assign jbr_taken = (j_taken | br_taken) & ID_over; 
+    assign jbr_taken = cancel ? 1'b0 : (j_taken | br_taken) & ID_over; 
     assign jbr_target = j_taken ? j_target : br_target;
 
     //ID到IF的跳转总线

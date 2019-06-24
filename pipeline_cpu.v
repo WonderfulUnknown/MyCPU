@@ -341,6 +341,9 @@ module mycpu_top(
         .rs_wait     (rs_wait     ),
         .rt_wait     (rt_wait     ),
 
+        //cancel 
+        .cancel      (cancel      ),
+
         //展示PC
         .ID_pc       (ID_pc       ) // O, 32
     ); 

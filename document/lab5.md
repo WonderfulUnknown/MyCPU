@@ -238,3 +238,13 @@ syscall->exc_happend
     mycpu    : PC = 0xbfc00380, wb_rf_wnum = 0x1a, wb_rf_wdata = 0x00038000
 --------------------------------------------------------------
 ```
+
+将int_happen恢复为0,nop前的mtc0不应该检测到中断,发生异常时将jbr_taken清空
+一开始给compare赋值的时候,如果正好和count相等,不应该触发中断
+死循环
+
+```c
+[  22000 ns] Test is running, debug_wb_pc = 0xbfc011fc
+```
+
+因为int_happen开启的时候导致statu_r[1] <= 1'b1,屏蔽了中断,所以导致后续时钟中断信号无法持续为1
