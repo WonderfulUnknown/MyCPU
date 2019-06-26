@@ -11,12 +11,12 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="20644093334fs"></ZoomStartTime>
-      <ZoomEndTime time="20672033335fs"></ZoomEndTime>
-      <Cursor1Time time="20651653000fs"></Cursor1Time>
+      <ZoomStartTime time="69954507000fs"></ZoomStartTime>
+      <ZoomEndTime time="69982767001fs"></ZoomEndTime>
+      <Cursor1Time time="69961947000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="177"></NameColumnWidth>
+      <NameColumnWidth column_width="161"></NameColumnWidth>
       <ValueColumnWidth column_width="61"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="10" />
@@ -315,6 +315,7 @@
    <wvobject type="group" fp_name="group3528">
       <obj_property name="label">if_module</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/IF_module/pc">
          <obj_property name="ElementShortName">pc[31:0]</obj_property>
          <obj_property name="ObjectShortName">pc[31:0]</obj_property>
@@ -367,10 +368,15 @@
          <obj_property name="ElementShortName">exc_pc[31:0]</obj_property>
          <obj_property name="ObjectShortName">exc_pc[31:0]</obj_property>
       </wvobject>
+      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/IF_module/delay_slot">
+         <obj_property name="ElementShortName">delay_slot</obj_property>
+         <obj_property name="ObjectShortName">delay_slot</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group401">
       <obj_property name="label">id_module</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/ID_module/ID_pc">
          <obj_property name="ElementShortName">ID_pc[31:0]</obj_property>
          <obj_property name="ObjectShortName">ID_pc[31:0]</obj_property>
@@ -754,6 +760,7 @@
       <wvobject type="group" fp_name="group362">
          <obj_property name="label">decode</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/ID_module/rs_value">
             <obj_property name="ElementShortName">rs_value[31:0]</obj_property>
             <obj_property name="ObjectShortName">rs_value[31:0]</obj_property>
@@ -802,6 +809,7 @@
       <wvobject type="group" fp_name="group356">
          <obj_property name="label">jump</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/ID_module/bd_pc">
             <obj_property name="ElementShortName">bd_pc[31:0]</obj_property>
             <obj_property name="ObjectShortName">bd_pc[31:0]</obj_property>

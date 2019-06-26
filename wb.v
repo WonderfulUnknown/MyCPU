@@ -172,7 +172,7 @@ module wb(                       // 写回级
             status_r[1] <= 1'b0;
             // status_r[0] <= 1'b1;
         end
-        else if (exc_happen | int_happen)
+        else if ((exc_happen | int_happen) & WB_valid)
         begin 
             status_r[1] <= 1'b1;
             // status_r[0] <= 1'b0;
@@ -258,7 +258,7 @@ module wb(                       // 写回级
     assign cp0r_epc = epc_r;
     always @(posedge clk)
     begin
-        if (exc_happen | int_happen)
+        if ((exc_happen | int_happen) & WB_valid)
         begin
             if (delay_slot)
             begin
