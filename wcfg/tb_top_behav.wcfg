@@ -11,12 +11,12 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="69954507000fs"></ZoomStartTime>
-      <ZoomEndTime time="69982767001fs"></ZoomEndTime>
-      <Cursor1Time time="69961947000fs"></Cursor1Time>
+      <ZoomStartTime time="522498372442fs"></ZoomStartTime>
+      <ZoomEndTime time="522530325512fs"></ZoomEndTime>
+      <Cursor1Time time="522525000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="161"></NameColumnWidth>
+      <NameColumnWidth column_width="157"></NameColumnWidth>
       <ValueColumnWidth column_width="61"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="10" />
@@ -82,10 +82,6 @@
             <obj_property name="ElementShortName">rf_wen[3:0]</obj_property>
             <obj_property name="ObjectShortName">rf_wen[3:0]</obj_property>
          </wvobject>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/delay_slot">
-         <obj_property name="ElementShortName">delay_slot</obj_property>
-         <obj_property name="ObjectShortName">delay_slot</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/inst_jbr">
          <obj_property name="ElementShortName">inst_jbr</obj_property>
@@ -179,12 +175,12 @@
             <obj_property name="ObjectShortName">ID_EXE_bus[181:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_MEM_bus">
-            <obj_property name="ElementShortName">EXE_MEM_bus[162:0]</obj_property>
-            <obj_property name="ObjectShortName">EXE_MEM_bus[162:0]</obj_property>
+            <obj_property name="ElementShortName">EXE_MEM_bus[166:0]</obj_property>
+            <obj_property name="ObjectShortName">EXE_MEM_bus[166:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_WB_bus">
-            <obj_property name="ElementShortName">MEM_WB_bus[156:0]</obj_property>
-            <obj_property name="ObjectShortName">MEM_WB_bus[156:0]</obj_property>
+            <obj_property name="ElementShortName">MEM_WB_bus[160:0]</obj_property>
+            <obj_property name="ObjectShortName">MEM_WB_bus[160:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/IF_ID_bus_r">
             <obj_property name="ElementShortName">IF_ID_bus_r[65:0]</obj_property>
@@ -195,12 +191,12 @@
             <obj_property name="ObjectShortName">ID_EXE_bus_r[181:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_MEM_bus_r">
-            <obj_property name="ElementShortName">EXE_MEM_bus_r[162:0]</obj_property>
-            <obj_property name="ObjectShortName">EXE_MEM_bus_r[162:0]</obj_property>
+            <obj_property name="ElementShortName">EXE_MEM_bus_r[166:0]</obj_property>
+            <obj_property name="ObjectShortName">EXE_MEM_bus_r[166:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_WB_bus_r">
-            <obj_property name="ElementShortName">MEM_WB_bus_r[156:0]</obj_property>
-            <obj_property name="ObjectShortName">MEM_WB_bus_r[156:0]</obj_property>
+            <obj_property name="ElementShortName">MEM_WB_bus_r[160:0]</obj_property>
+            <obj_property name="ObjectShortName">MEM_WB_bus_r[160:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/jbr_bus">
             <obj_property name="ElementShortName">jbr_bus[32:0]</obj_property>
@@ -219,12 +215,12 @@
             <obj_property name="ObjectShortName">ID_EXE_bus_r[181:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_MEM_bus_r">
-            <obj_property name="ElementShortName">EXE_MEM_bus_r[162:0]</obj_property>
-            <obj_property name="ObjectShortName">EXE_MEM_bus_r[162:0]</obj_property>
+            <obj_property name="ElementShortName">EXE_MEM_bus_r[166:0]</obj_property>
+            <obj_property name="ObjectShortName">EXE_MEM_bus_r[166:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_WB_bus_r">
-            <obj_property name="ElementShortName">MEM_WB_bus_r[156:0]</obj_property>
-            <obj_property name="ObjectShortName">MEM_WB_bus_r[156:0]</obj_property>
+            <obj_property name="ElementShortName">MEM_WB_bus_r[160:0]</obj_property>
+            <obj_property name="ObjectShortName">MEM_WB_bus_r[160:0]</obj_property>
          </wvobject>
       </wvobject>
       <wvobject type="group" fp_name="group1204">
@@ -250,22 +246,6 @@
             <obj_property name="ElementShortName">rt[4:0]</obj_property>
             <obj_property name="ObjectShortName">rt[4:0]</obj_property>
          </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/id_need_rs">
-            <obj_property name="ElementShortName">id_need_rs</obj_property>
-            <obj_property name="ObjectShortName">id_need_rs</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/id_need_rt">
-            <obj_property name="ElementShortName">id_need_rt</obj_property>
-            <obj_property name="ObjectShortName">id_need_rt</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/to_id_rs">
-            <obj_property name="ElementShortName">to_id_rs[31:0]</obj_property>
-            <obj_property name="ObjectShortName">to_id_rs[31:0]</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/to_id_rt">
-            <obj_property name="ElementShortName">to_id_rt[31:0]</obj_property>
-            <obj_property name="ObjectShortName">to_id_rt[31:0]</obj_property>
-         </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/rs_value">
             <obj_property name="ElementShortName">rs_value[31:0]</obj_property>
             <obj_property name="ObjectShortName">rs_value[31:0]</obj_property>
@@ -273,14 +253,6 @@
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/rt_value">
             <obj_property name="ElementShortName">rt_value[31:0]</obj_property>
             <obj_property name="ObjectShortName">rt_value[31:0]</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_rf_wen">
-            <obj_property name="ElementShortName">EXE_rf_wen</obj_property>
-            <obj_property name="ObjectShortName">EXE_rf_wen</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_rf_wen">
-            <obj_property name="ElementShortName">MEM_rf_wen</obj_property>
-            <obj_property name="ObjectShortName">MEM_rf_wen</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_wdest">
             <obj_property name="ElementShortName">EXE_wdest[4:0]</obj_property>
@@ -290,32 +262,11 @@
             <obj_property name="ElementShortName">MEM_wdest[4:0]</obj_property>
             <obj_property name="ObjectShortName">MEM_wdest[4:0]</obj_property>
          </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/forwardA">
-            <obj_property name="ElementShortName">forwardA</obj_property>
-            <obj_property name="ObjectShortName">forwardA</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/forwardB">
-            <obj_property name="ElementShortName">forwardB</obj_property>
-            <obj_property name="ObjectShortName">forwardB</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/to_alu">
-            <obj_property name="ElementShortName">to_alu[31:0]</obj_property>
-            <obj_property name="ObjectShortName">to_alu[31:0]</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/exe_result">
-            <obj_property name="ElementShortName">exe_result[31:0]</obj_property>
-            <obj_property name="ObjectShortName">exe_result[31:0]</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/mem_result">
-            <obj_property name="ElementShortName">mem_result[31:0]</obj_property>
-            <obj_property name="ObjectShortName">mem_result[31:0]</obj_property>
-         </wvobject>
       </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group3528">
       <obj_property name="label">if_module</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/IF_module/pc">
          <obj_property name="ElementShortName">pc[31:0]</obj_property>
          <obj_property name="ObjectShortName">pc[31:0]</obj_property>
@@ -368,15 +319,10 @@
          <obj_property name="ElementShortName">exc_pc[31:0]</obj_property>
          <obj_property name="ObjectShortName">exc_pc[31:0]</obj_property>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/IF_module/delay_slot">
-         <obj_property name="ElementShortName">delay_slot</obj_property>
-         <obj_property name="ObjectShortName">delay_slot</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group401">
       <obj_property name="label">id_module</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/ID_module/ID_pc">
          <obj_property name="ElementShortName">ID_pc[31:0]</obj_property>
          <obj_property name="ObjectShortName">ID_pc[31:0]</obj_property>
@@ -708,25 +654,9 @@
             <obj_property name="ElementShortName">inst_ADD</obj_property>
             <obj_property name="ObjectShortName">inst_ADD</obj_property>
          </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/inst_R">
-            <obj_property name="ElementShortName">inst_R</obj_property>
-            <obj_property name="ObjectShortName">inst_R</obj_property>
-         </wvobject>
          <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/inst_BREAK">
             <obj_property name="ElementShortName">inst_BREAK</obj_property>
             <obj_property name="ObjectShortName">inst_BREAK</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/inst_reserved">
-            <obj_property name="ElementShortName">inst_reserved</obj_property>
-            <obj_property name="ObjectShortName">inst_reserved</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/multiply">
-            <obj_property name="ElementShortName">multiply</obj_property>
-            <obj_property name="ObjectShortName">multiply</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/divide">
-            <obj_property name="ElementShortName">divide</obj_property>
-            <obj_property name="ObjectShortName">divide</obj_property>
          </wvobject>
          <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/mflo">
             <obj_property name="ElementShortName">mflo</obj_property>
@@ -864,8 +794,8 @@
          <obj_property name="ObjectShortName">alu_operand2[31:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/ID_module/mem_control">
-         <obj_property name="ElementShortName">mem_control[7:0]</obj_property>
-         <obj_property name="ObjectShortName">mem_control[7:0]</obj_property>
+         <obj_property name="ElementShortName">mem_control[5:0]</obj_property>
+         <obj_property name="ObjectShortName">mem_control[5:0]</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/rs_wait">
          <obj_property name="ElementShortName">rs_wait</obj_property>
@@ -875,9 +805,9 @@
          <obj_property name="ElementShortName">rt_wait</obj_property>
          <obj_property name="ObjectShortName">rt_wait</obj_property>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/rf_wen">
-         <obj_property name="ElementShortName">rf_wen</obj_property>
-         <obj_property name="ObjectShortName">rf_wen</obj_property>
+      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/ID_module/rf_wen">
+         <obj_property name="ElementShortName">rf_wen[3:0]</obj_property>
+         <obj_property name="ObjectShortName">rf_wen[3:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/ID_module/rf_wdest">
          <obj_property name="ElementShortName">rf_wdest[4:0]</obj_property>
@@ -886,10 +816,6 @@
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/inst_jbr">
          <obj_property name="ElementShortName">inst_jbr</obj_property>
          <obj_property name="ObjectShortName">inst_jbr</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/delay_slot">
-         <obj_property name="ElementShortName">delay_slot</obj_property>
-         <obj_property name="ObjectShortName">delay_slot</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/ID_module/cp0r_addr">
          <obj_property name="ElementShortName">cp0r_addr[7:0]</obj_property>
@@ -911,10 +837,6 @@
          <obj_property name="ElementShortName">cp0r_sel[2:0]</obj_property>
          <obj_property name="ObjectShortName">cp0r_sel[2:0]</obj_property>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/rs_equql_rt">
-         <obj_property name="ElementShortName">rs_equql_rt</obj_property>
-         <obj_property name="ObjectShortName">rs_equql_rt</obj_property>
-      </wvobject>
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/ID_module/rs_ez">
          <obj_property name="ElementShortName">rs_ez</obj_property>
          <obj_property name="ObjectShortName">rs_ez</obj_property>
@@ -935,18 +857,6 @@
          <obj_property name="ElementShortName">EXE_wdest[4:0]</obj_property>
          <obj_property name="ObjectShortName">EXE_wdest[4:0]</obj_property>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/inst_R">
-         <obj_property name="ElementShortName">inst_R</obj_property>
-         <obj_property name="ObjectShortName">inst_R</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/rs_wait">
-         <obj_property name="ElementShortName">rs_wait</obj_property>
-         <obj_property name="ObjectShortName">rs_wait</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/rt_wait">
-         <obj_property name="ElementShortName">rt_wait</obj_property>
-         <obj_property name="ObjectShortName">rt_wait</obj_property>
-      </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_control">
          <obj_property name="ElementShortName">alu_control[11:0]</obj_property>
          <obj_property name="ObjectShortName">alu_control[11:0]</obj_property>
@@ -959,21 +869,9 @@
          <obj_property name="ElementShortName">alu_operand2[31:0]</obj_property>
          <obj_property name="ObjectShortName">alu_operand2[31:0]</obj_property>
       </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_src1">
-         <obj_property name="ElementShortName">alu_src1[31:0]</obj_property>
-         <obj_property name="ObjectShortName">alu_src1[31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_src2">
-         <obj_property name="ElementShortName">alu_src2[31:0]</obj_property>
-         <obj_property name="ObjectShortName">alu_src2[31:0]</obj_property>
-      </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_result">
          <obj_property name="ElementShortName">alu_result[31:0]</obj_property>
          <obj_property name="ObjectShortName">alu_result[31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/adder_cout">
-         <obj_property name="ElementShortName">adder_cout[1:0]</obj_property>
-         <obj_property name="ObjectShortName">adder_cout[1:0]</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/clk">
          <obj_property name="ElementShortName">clk</obj_property>
@@ -1004,8 +902,8 @@
          <obj_property name="ObjectShortName">lo_write</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/mem_control">
-         <obj_property name="ElementShortName">mem_control[7:0]</obj_property>
-         <obj_property name="ObjectShortName">mem_control[7:0]</obj_property>
+         <obj_property name="ElementShortName">mem_control[5:0]</obj_property>
+         <obj_property name="ObjectShortName">mem_control[5:0]</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/mfc0">
          <obj_property name="ElementShortName">mfc0</obj_property>
@@ -1039,10 +937,6 @@
          <obj_property name="ElementShortName">mult_end</obj_property>
          <obj_property name="ObjectShortName">mult_end</obj_property>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/multiply">
-         <obj_property name="ElementShortName">multiply</obj_property>
-         <obj_property name="ObjectShortName">multiply</obj_property>
-      </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/pc">
          <obj_property name="ElementShortName">pc[31:0]</obj_property>
          <obj_property name="ObjectShortName">pc[31:0]</obj_property>
@@ -1055,17 +949,13 @@
          <obj_property name="ElementShortName">rf_wdest[4:0]</obj_property>
          <obj_property name="ObjectShortName">rf_wdest[4:0]</obj_property>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/rf_wen">
-         <obj_property name="ElementShortName">rf_wen</obj_property>
-         <obj_property name="ObjectShortName">rf_wen</obj_property>
+      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/rf_wen">
+         <obj_property name="ElementShortName">rf_wen[3:0]</obj_property>
+         <obj_property name="ObjectShortName">rf_wen[3:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/store_data">
          <obj_property name="ElementShortName">store_data[31:0]</obj_property>
          <obj_property name="ObjectShortName">store_data[31:0]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/overflow">
-         <obj_property name="ElementShortName">overflow</obj_property>
-         <obj_property name="ObjectShortName">overflow</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/syscall">
          <obj_property name="ElementShortName">syscall</obj_property>
@@ -1087,9 +977,9 @@
          <obj_property name="ElementShortName">store_data[31:0]</obj_property>
          <obj_property name="ObjectShortName">store_data[31:0]</obj_property>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/rf_wen">
-         <obj_property name="ElementShortName">rf_wen</obj_property>
-         <obj_property name="ObjectShortName">rf_wen</obj_property>
+      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_module/rf_wen">
+         <obj_property name="ElementShortName">rf_wen[3:0]</obj_property>
+         <obj_property name="ObjectShortName">rf_wen[3:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_module/rf_wdest">
          <obj_property name="ElementShortName">rf_wdest[4:0]</obj_property>
@@ -1098,30 +988,6 @@
       <wvobject type="group" fp_name="group863">
          <obj_property name="label">exception</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/fetch_error">
-            <obj_property name="ElementShortName">fetch_error</obj_property>
-            <obj_property name="ObjectShortName">fetch_error</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/inst_reserved">
-            <obj_property name="ElementShortName">inst_reserved</obj_property>
-            <obj_property name="ObjectShortName">inst_reserved</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/addr_error">
-            <obj_property name="ElementShortName">addr_error</obj_property>
-            <obj_property name="ObjectShortName">addr_error</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/raddr_error">
-            <obj_property name="ElementShortName">raddr_error</obj_property>
-            <obj_property name="ObjectShortName">raddr_error</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/waddr_error">
-            <obj_property name="ElementShortName">waddr_error</obj_property>
-            <obj_property name="ObjectShortName">waddr_error</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/overflow">
-            <obj_property name="ElementShortName">overflow</obj_property>
-            <obj_property name="ObjectShortName">overflow</obj_property>
-         </wvobject>
          <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/eret">
             <obj_property name="ElementShortName">eret</obj_property>
             <obj_property name="ObjectShortName">eret</obj_property>
@@ -1152,8 +1018,8 @@
          <obj_property name="ObjectShortName">mem_result[31:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_module/mem_control">
-         <obj_property name="ElementShortName">mem_control[7:0]</obj_property>
-         <obj_property name="ObjectShortName">mem_control[7:0]</obj_property>
+         <obj_property name="ElementShortName">mem_control[5:0]</obj_property>
+         <obj_property name="ObjectShortName">mem_control[5:0]</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/load_sign">
          <obj_property name="ElementShortName">load_sign</obj_property>
@@ -1162,30 +1028,6 @@
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/ls_word">
          <obj_property name="ElementShortName">ls_word</obj_property>
          <obj_property name="ObjectShortName">ls_word</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/ls_half_word">
-         <obj_property name="ElementShortName">ls_half_word</obj_property>
-         <obj_property name="ObjectShortName">ls_half_word</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/ls_byte">
-         <obj_property name="ElementShortName">ls_byte</obj_property>
-         <obj_property name="ObjectShortName">ls_byte</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/ls_unaligned">
-         <obj_property name="ElementShortName">ls_unaligned</obj_property>
-         <obj_property name="ObjectShortName">ls_unaligned</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/direction">
-         <obj_property name="ElementShortName">direction</obj_property>
-         <obj_property name="ObjectShortName">direction</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_module/unaligned_result">
-         <obj_property name="ElementShortName">unaligned_result[31:0]</obj_property>
-         <obj_property name="ObjectShortName">unaligned_result[31:0]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/MEM_module/l_sign">
-         <obj_property name="ElementShortName">l_sign</obj_property>
-         <obj_property name="ObjectShortName">l_sign</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_module/load_result">
          <obj_property name="ElementShortName">load_result[31:0]</obj_property>
@@ -1264,12 +1106,12 @@
          <obj_property name="ObjectShortName">MEM_allow_in</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_module/MEM_WB_bus">
-         <obj_property name="ElementShortName">MEM_WB_bus[156:0]</obj_property>
-         <obj_property name="ObjectShortName">MEM_WB_bus[156:0]</obj_property>
+         <obj_property name="ElementShortName">MEM_WB_bus[160:0]</obj_property>
+         <obj_property name="ObjectShortName">MEM_WB_bus[160:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/MEM_module/EXE_MEM_bus_r">
-         <obj_property name="ElementShortName">EXE_MEM_bus_r[162:0]</obj_property>
-         <obj_property name="ObjectShortName">EXE_MEM_bus_r[162:0]</obj_property>
+         <obj_property name="ElementShortName">EXE_MEM_bus_r[166:0]</obj_property>
+         <obj_property name="ObjectShortName">EXE_MEM_bus_r[166:0]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group620">
@@ -1304,10 +1146,6 @@
          <obj_property name="ElementShortName">mem_result[31:0]</obj_property>
          <obj_property name="ObjectShortName">mem_result[31:0]</obj_property>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/delay_slot">
-         <obj_property name="ElementShortName">delay_slot</obj_property>
-         <obj_property name="ObjectShortName">delay_slot</obj_property>
-      </wvobject>
       <wvobject type="group" fp_name="group5437">
          <obj_property name="label">exc/int</obj_property>
          <obj_property name="DisplayName">label</obj_property>
@@ -1324,34 +1162,6 @@
             <obj_property name="ElementShortName">WB_valid</obj_property>
             <obj_property name="ObjectShortName">WB_valid</obj_property>
          </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/flag">
-            <obj_property name="ElementShortName">flag</obj_property>
-            <obj_property name="ObjectShortName">flag</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/int_en">
-            <obj_property name="ElementShortName">int_en</obj_property>
-            <obj_property name="ObjectShortName">int_en</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/int_happen">
-            <obj_property name="ElementShortName">int_happen</obj_property>
-            <obj_property name="ObjectShortName">int_happen</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/hard_int">
-            <obj_property name="ElementShortName">hard_int</obj_property>
-            <obj_property name="ObjectShortName">hard_int</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/soft_int">
-            <obj_property name="ElementShortName">soft_int</obj_property>
-            <obj_property name="ObjectShortName">soft_int</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/clock_int">
-            <obj_property name="ElementShortName">clock_int</obj_property>
-            <obj_property name="ObjectShortName">clock_int</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/exc_happen">
-            <obj_property name="ElementShortName">exc_happen</obj_property>
-            <obj_property name="ObjectShortName">exc_happen</obj_property>
-         </wvobject>
          <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/eret">
             <obj_property name="ElementShortName">eret</obj_property>
             <obj_property name="ObjectShortName">eret</obj_property>
@@ -1363,26 +1173,6 @@
          <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/break">
             <obj_property name="ElementShortName">break</obj_property>
             <obj_property name="ObjectShortName">break</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/fetch_error">
-            <obj_property name="ElementShortName">fetch_error</obj_property>
-            <obj_property name="ObjectShortName">fetch_error</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/inst_reserved">
-            <obj_property name="ElementShortName">inst_reserved</obj_property>
-            <obj_property name="ObjectShortName">inst_reserved</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/raddr_error">
-            <obj_property name="ElementShortName">raddr_error</obj_property>
-            <obj_property name="ObjectShortName">raddr_error</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/waddr_error">
-            <obj_property name="ElementShortName">waddr_error</obj_property>
-            <obj_property name="ObjectShortName">waddr_error</obj_property>
-         </wvobject>
-         <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/overflow">
-            <obj_property name="ElementShortName">overflow</obj_property>
-            <obj_property name="ObjectShortName">overflow</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/WB_module/exc_pc">
             <obj_property name="ElementShortName">exc_pc[31:0]</obj_property>
@@ -1494,9 +1284,9 @@
             <obj_property name="ObjectShortName">mfhi</obj_property>
          </wvobject>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/WB_module/wen">
-         <obj_property name="ElementShortName">wen</obj_property>
-         <obj_property name="ObjectShortName">wen</obj_property>
+      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/WB_module/wen">
+         <obj_property name="ElementShortName">wen[3:0]</obj_property>
+         <obj_property name="ObjectShortName">wen[3:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/WB_module/wdest">
          <obj_property name="ElementShortName">wdest[4:0]</obj_property>
@@ -1574,46 +1364,6 @@
    <wvobject type="group" fp_name="group1523">
       <obj_property name="label">bypass</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/bypass_module/rs">
-         <obj_property name="ElementShortName">rs[4:0]</obj_property>
-         <obj_property name="ObjectShortName">rs[4:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/bypass_module/rt">
-         <obj_property name="ElementShortName">rt[4:0]</obj_property>
-         <obj_property name="ObjectShortName">rt[4:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/bypass_module/EXE_wdest">
-         <obj_property name="ElementShortName">EXE_wdest[4:0]</obj_property>
-         <obj_property name="ObjectShortName">EXE_wdest[4:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/bypass_module/MEM_wdest">
-         <obj_property name="ElementShortName">MEM_wdest[4:0]</obj_property>
-         <obj_property name="ObjectShortName">MEM_wdest[4:0]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/bypass_module/EXE_rf_wen">
-         <obj_property name="ElementShortName">EXE_rf_wen</obj_property>
-         <obj_property name="ObjectShortName">EXE_rf_wen</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/bypass_module/MEM_rf_wen">
-         <obj_property name="ElementShortName">MEM_rf_wen</obj_property>
-         <obj_property name="ObjectShortName">MEM_rf_wen</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/bypass_module/forwardA">
-         <obj_property name="ElementShortName">forwardA</obj_property>
-         <obj_property name="ObjectShortName">forwardA</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/bypass_module/forwardB">
-         <obj_property name="ElementShortName">forwardB</obj_property>
-         <obj_property name="ObjectShortName">forwardB</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/bypass_module/EXE_hazard">
-         <obj_property name="ElementShortName">EXE_hazard</obj_property>
-         <obj_property name="ObjectShortName">EXE_hazard</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/bypass_module/MEM_hazard">
-         <obj_property name="ElementShortName">MEM_hazard</obj_property>
-         <obj_property name="ObjectShortName">MEM_hazard</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group576">
       <obj_property name="label">regfile</obj_property>
@@ -1642,9 +1392,9 @@
          <obj_property name="ElementShortName">rdata2[31:0]</obj_property>
          <obj_property name="ObjectShortName">rdata2[31:0]</obj_property>
       </wvobject>
-      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/rf_module/wen">
-         <obj_property name="ElementShortName">wen</obj_property>
-         <obj_property name="ObjectShortName">wen</obj_property>
+      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/rf_module/wen">
+         <obj_property name="ElementShortName">wen[3:0]</obj_property>
+         <obj_property name="ObjectShortName">wen[3:0]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group2272">
@@ -1662,21 +1412,13 @@
          <obj_property name="ElementShortName">alu_src2[31:0]</obj_property>
          <obj_property name="ObjectShortName">alu_src2[31:0]</obj_property>
       </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/op1">
-         <obj_property name="ElementShortName">op1[32:0]</obj_property>
-         <obj_property name="ObjectShortName">op1[32:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/op2">
-         <obj_property name="ElementShortName">op2[32:0]</obj_property>
-         <obj_property name="ObjectShortName">op2[32:0]</obj_property>
-      </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/alu_result">
          <obj_property name="ElementShortName">alu_result[31:0]</obj_property>
          <obj_property name="ObjectShortName">alu_result[31:0]</obj_property>
       </wvobject>
-      <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/adder_cout">
-         <obj_property name="ElementShortName">adder_cout[1:0]</obj_property>
-         <obj_property name="ObjectShortName">adder_cout[1:0]</obj_property>
+      <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/adder_cout">
+         <obj_property name="ElementShortName">adder_cout</obj_property>
+         <obj_property name="ObjectShortName">adder_cout</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/slt_result">
          <obj_property name="ElementShortName">slt_result[31:0]</obj_property>
@@ -1719,20 +1461,20 @@
          <obj_property name="ObjectShortName">lui_result[31:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/adder_operand1">
-         <obj_property name="ElementShortName">adder_operand1[31:0]</obj_property>
-         <obj_property name="ObjectShortName">adder_operand1[31:0]</obj_property>
+         <obj_property name="ElementShortName">adder_operand1[32:0]</obj_property>
+         <obj_property name="ObjectShortName">adder_operand1[32:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/adder_operand2">
-         <obj_property name="ElementShortName">adder_operand2[31:0]</obj_property>
-         <obj_property name="ObjectShortName">adder_operand2[31:0]</obj_property>
+         <obj_property name="ElementShortName">adder_operand2[32:0]</obj_property>
+         <obj_property name="ObjectShortName">adder_operand2[32:0]</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/adder_cin">
          <obj_property name="ElementShortName">adder_cin</obj_property>
          <obj_property name="ObjectShortName">adder_cin</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/adder_result">
-         <obj_property name="ElementShortName">adder_result[31:0]</obj_property>
-         <obj_property name="ObjectShortName">adder_result[31:0]</obj_property>
+         <obj_property name="ElementShortName">adder_result[32:0]</obj_property>
+         <obj_property name="ObjectShortName">adder_result[32:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_top/soc_lite/cpu/EXE_module/alu_module/shf">
          <obj_property name="ElementShortName">shf[4:0]</obj_property>

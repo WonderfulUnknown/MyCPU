@@ -29,16 +29,16 @@ module mycpu_top(
     output [31:0] LO_data,
 
     //the signal for soc_lite_top.v
-    input        inst_sram_en,
-    // input [3 :0] inst_sram_wen,
-    input [31:0] inst_sram_addr,
-    // input [31:0] inst_sram_wdata,
+    output        inst_sram_en,
+    output [3 :0] inst_sram_wen,
+    output [31:0] inst_sram_addr,
+    output [31:0] inst_sram_wdata,
     input [31:0] inst_sram_rdata,
 
-    input        data_sram_en,
-    input [3 :0] data_sram_wen,
-    input [31:0] data_sram_addr,
-    input [31:0] data_sram_wdata,
+    output        data_sram_en,
+    output [3 :0] data_sram_wen,
+    output [31:0] data_sram_addr,
+    output [31:0] data_sram_wdata,
     input [31:0] data_sram_rdata,
 
     //debug
@@ -367,6 +367,11 @@ module mycpu_top(
         .to_alu      (to_alu      )
     );
 
+    //虚实地址转换
+    wire [31:0] temp_addr;
+    assign data_sram_addr[31:29] = 3'b0;
+    assign data_sram_addr[28:0 ] = temp_addr[28:0];
+
     mem MEM_module(                     // 访存级
         .clk          (clk          ),  // I, 1 
         .MEM_valid    (MEM_valid    ),  // I, 1
@@ -377,9 +382,10 @@ module mycpu_top(
         // .dm_wdata     (dm_wdata     ),  // O, 32
       
         .dm_rdata     (data_sram_rdata),
-        .dm_addr      (data_sram_addr),
-        // .dm_wen       (data_sram_wen),
-        .dm_wen       (dm_wen),
+        // .dm_addr      (data_sram_addr ),
+        .dm_addr      (temp_addr      ),
+        // .dm_wen       (data_sram_wen  ),
+        .dm_wen       (dm_wen         ),
         .dm_wdata     (data_sram_wdata),
       
         .MEM_over     (MEM_over     ),  // O, 1
